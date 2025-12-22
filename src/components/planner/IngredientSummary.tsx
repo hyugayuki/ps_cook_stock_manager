@@ -75,12 +75,12 @@ export function IngredientSummary() {
   const listItems = (
     <div className="space-y-1">
       {summary.map((item) => (
-        <div key={item.id} className="flex items-center justify-between border-b py-1 last:border-0 hover:bg-muted/50">
+        <div key={item.id} className="flex items-center justify-between rounded-md px-2 py-2 hover:bg-muted/50">
           <span className="text-sm font-medium">
-            <span className="mr-2 text-base">{item.emoji}</span>
+            <span className="mr-3 text-lg">{item.emoji}</span>
             {item.name}
           </span>
-          <span className={`text-sm font-bold ${item.count === 0 ? 'text-muted-foreground' : ''}`}>{item.count}</span>
+          <span className={`text-sm font-bold ${item.count === 0 ? 'text-muted-foreground' : 'text-primary'}`}>{item.count}</span>
         </div>
       ))}
     </div>

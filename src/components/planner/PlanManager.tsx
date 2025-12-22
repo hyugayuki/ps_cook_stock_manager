@@ -62,15 +62,18 @@ export function PlanManager() {
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
+            <Label htmlFor="new-plan-name" className="text-right">
               新規プラン
             </Label>
             <Input
-              id="name"
+              id="new-plan-name"
+              name="new-plan-name"
               value={newPlanName}
               onChange={(e) => setNewPlanName(e.target.value)}
               placeholder="例: 来週のカレーウィーク"
               className="col-span-3"
+              autoComplete="off"
+              data-1p-ignore
             />
           </div>
         </div>
@@ -89,6 +92,8 @@ export function PlanManager() {
                                     value={editName}
                                     onChange={(e) => setEditName(e.target.value)}
                                     className="h-8"
+                                    autoComplete="off"
+                                    data-1p-ignore
                                  />
                                  <Button size="sm" onClick={handleUpdate}>保存</Button>
                              </div>

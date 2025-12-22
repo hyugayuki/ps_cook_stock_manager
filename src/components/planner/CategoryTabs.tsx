@@ -2,10 +2,10 @@ import { Button } from "@/components/ui/button";
 import { usePlannerStore } from "@/store/usePlannerStore";
 import { CookingCategory } from "@/types";
 
-const categories: { value: CookingCategory; label: string }[] = [
-  { value: "curry", label: "カレー" },
-  { value: "salad", label: "サラダ" },
-  { value: "dessert", label: "デザート" },
+const categories: { value: CookingCategory; label: string; icon: string }[] = [
+  { value: "curry", label: "カレー", icon: "🍛" },
+  { value: "salad", label: "サラダ", icon: "🥗" },
+  { value: "dessert", label: "デザート", icon: "🥤" },
 ];
 
 export function CategoryTabs() {
@@ -15,18 +15,26 @@ export function CategoryTabs() {
   if (!currentPlan) return null;
 
   return (
-    <div className="flex justify-center p-4">
-      <div className="flex w-full max-w-[400px] rounded-md border bg-muted p-1">
-        {categories.map((cat) => (
-          <Button
-            key={cat.value}
-            variant={currentPlan.category === cat.value ? "secondary" : "ghost"}
-            className={`flex-1 ${currentPlan.category === cat.value ? 'bg-background shadow-sm' : ''}`}
-            onClick={() => setCategory(cat.value)}
-          >
-            {cat.label}
-          </Button>
-        ))}
+    <div className="flex justify-center">
+      <div className="flex w-full max-w-[500px] items-center justify-center gap-2 sm:gap-4">
+        {categories.map((cat) => {
+          const isActive = currentPlan.category === cat.value;
+          return (
+            <Button
+              key={cat.value}
+              variant={isActive ? "secondary" : "outline"}
+              className={`h-10 flex-1 rounded-full border px-2 sm:px-4 transition-all duration-200 ${
+                  isActive 
+                  ? "border-secondary-foreground/10 bg-secondary font-bold text-secondary-foreground shadow-sm" 
+                  : "border-border text-muted-foreground hover:border-primary/50 hover:bg-background hover:text-foreground"
+              }`}
+              onClick={() => setCategory(cat.value)}
+            >
+              <span className="text-lg">{cat.icon}</span>
+              {cat.label}
+            </Button>
+          )
+        })}
       </div>
     </div>
   );

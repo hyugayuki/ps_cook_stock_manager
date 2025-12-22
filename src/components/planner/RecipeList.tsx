@@ -13,12 +13,12 @@ export function RecipeList() {
     .sort((a, b) => b.energy - a.energy);
 
   return (
-    <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-2 p-2 sm:p-4">
       {filteredRecipes.map((recipe) => (
         <RecipeCard key={recipe.id} recipe={recipe} />
       ))}
       {filteredRecipes.length === 0 && (
-          <div className="col-span-full py-8 text-center text-muted-foreground">
+          <div className="py-8 text-center text-muted-foreground">
               このカテゴリのレシピはまだ登録されていません。
           </div>
       )}

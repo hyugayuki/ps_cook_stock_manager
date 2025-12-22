@@ -32,10 +32,13 @@ export default function Home() {
       
       <Header />
       
-      <main className="container mx-auto flex-1 p-4">
+      <main className="container mx-auto flex-1 p-2 sm:p-4">
         <div className="grid gap-6 md:grid-cols-[1fr_300px] lg:grid-cols-[1fr_350px]">
           {/* Main Content Area */}
           <div className="flex flex-col gap-6">
+            <p className="text-center text-xs text-muted-foreground">
+              指定した回数分のレシピに必要な食材数を合計・管理できます
+            </p>
             <CategoryTabs />
             <RecipeList />
           </div>
