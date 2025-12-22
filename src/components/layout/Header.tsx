@@ -14,7 +14,8 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { usePlannerStore } from "@/store/usePlannerStore";
-import { Settings as SettingsIcon } from "lucide-react";
+import { Settings as SettingsIcon, Info } from "lucide-react";
+import Link from "next/link";
 import { PlanManager } from "../planner/PlanManager";
 import { GAME_CONSTANTS } from "@/data/constants";
 
@@ -80,6 +81,16 @@ export function Header() {
                                 }}
                             />
                         </div>
+                    </div>
+                    <div className="border-t pt-4">
+                        <Link href="/about" passHref>
+                            <Button variant="ghost" className="w-full justify-start gap-2 px-2" asChild>
+                                <span>
+                                    <Info className="h-4 w-4" />
+                                    このアプリについて
+                                </span>
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </PopoverContent>
