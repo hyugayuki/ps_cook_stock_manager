@@ -19,9 +19,14 @@ import { useMemo, useState } from "react";
 import { AlertCircle, ChevronUp } from "lucide-react";
 
 export function IngredientSummary() {
-  const { plans, currentPlanId, settings } = usePlannerStore();
+  const { plans, currentPlanId, settings, selectedIngredientId, setSelectedIngredient } = usePlannerStore();
   const currentPlan = plans.find((p) => p.id === currentPlanId);
   const [open, setOpen] = useState(false);
+
+  const handleSelect = (id: string) => {
+    setSelectedIngredient(selectedIngredientId === id ? null : id);
+    setOpen(false); // Close drawer on mobile selection
+  };
 
   const summary = useMemo(() => {
     if (!currentPlan) return [];
@@ -74,15 +79,26 @@ export function IngredientSummary() {
 
   const listItems = (
     <div className="space-y-1">
-      {summary.map((item) => (
-        <div key={item.id} className="flex items-center justify-between rounded-md px-2 py-2 hover:bg-muted/50">
-          <span className="text-sm font-medium">
-            <span className="mr-3 text-lg">{item.emoji}</span>
-            {item.name}
-          </span>
-          <span className={`text-sm font-bold ${item.count === 0 ? 'text-muted-foreground' : 'text-primary'}`}>{item.count}</span>
-        </div>
-      ))}
+      {summary.map((item) => {
+        const isSelected = selectedIngredientId === item.id;
+        return (
+            <div 
+                key={item.id} 
+                className={`flex cursor-pointer items-center justify-between rounded-md px-2 py-2 transition-colors ${
+                    isSelected 
+                    ? "bg-primary/20 hover:bg-primary/30 ring-1 ring-primary/50" 
+                    : "hover:bg-muted/50"
+                }`}
+                onClick={() => handleSelect(item.id)}
+            >
+            <span className="text-sm font-medium">
+                <span className="mr-3 text-lg">{item.emoji}</span>
+                {item.name}
+            </span>
+            <span className={`text-sm font-bold ${item.count === 0 ? 'text-muted-foreground' : 'text-primary'}`}>{item.count}</span>
+            </div>
+        )
+      })}
     </div>
   );
 
