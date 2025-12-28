@@ -37,7 +37,7 @@ export default function Home() {
           {/* Main Content Area */}
           <div className="flex flex-col gap-6">
             <p className="text-center text-xs text-muted-foreground">
-              指定した回数分のレシピに必要な食材数を合計・管理できます
+              指定し回数分のレシピに必要な食材数を合計・管理できます
             </p>
             <CategoryTabs />
             <RecipeList />

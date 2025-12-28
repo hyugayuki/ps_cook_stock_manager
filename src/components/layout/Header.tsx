@@ -61,16 +61,17 @@ export function Header() {
                 <div className="grid gap-4">
                     <div className="space-y-2">
                         <h4 className="font-medium leading-none">設定</h4>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-xs text-muted-foreground">
                             アプリ全体の共通設定です。
                         </p>
                     </div>
                     <div className="grid gap-2">
-                        <div className="grid grid-cols-3 items-center gap-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="bagLimit">食材バック容量</Label>
                             <Input
                                 id="bagLimit"
                                 type="number"
-                                className="col-span-2 h-8"
+                                className="h-8"
                                 value={settings.bagLimit}
                                 max={GAME_CONSTANTS.DEFAULT_BAG_LIMIT}
                                 onChange={(e) => {
