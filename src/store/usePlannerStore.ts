@@ -16,6 +16,7 @@ interface PlannerState {
   setCategory: (category: CookingCategory) => void;
   updateTarget: (recipeId: string, count: number) => void;
   setBagLimit: (limit: number) => void;
+  setWeeklyCategory: (category: CookingCategory | null) => void;
   
   // Filtering
   selectedIngredientId: string | null;
@@ -38,6 +39,7 @@ export const usePlannerStore = create<PlannerState>()(
       currentPlanId: DEFAULT_PLAN_ID,
       settings: {
         bagLimit: GAME_CONSTANTS.DEFAULT_BAG_LIMIT,
+        weeklyCategory: null,
       },
 
       createPlan: (name) =>
@@ -120,6 +122,11 @@ export const usePlannerStore = create<PlannerState>()(
       setBagLimit: (limit) =>
         set((state) => ({
           settings: { ...state.settings, bagLimit: limit },
+        })),
+
+      setWeeklyCategory: (category) =>
+        set((state) => ({
+          settings: { ...state.settings, weeklyCategory: category },
         })),
     }),
     {

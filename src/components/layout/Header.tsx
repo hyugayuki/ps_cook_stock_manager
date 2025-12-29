@@ -17,10 +17,10 @@ import { usePlannerStore } from "@/store/usePlannerStore";
 import { Settings as SettingsIcon, Info } from "lucide-react";
 import Link from "next/link";
 import { PlanManager } from "../planner/PlanManager";
-import { GAME_CONSTANTS } from "@/data/constants";
+import { GAME_CONSTANTS, COOKING_CATEGORIES } from "@/data/constants";
 
 export function Header() {
-  const { plans, currentPlanId, switchPlan, settings, setBagLimit } = usePlannerStore();
+  const { plans, currentPlanId, switchPlan, settings, setBagLimit, setWeeklyCategory } = usePlannerStore();
   const currentPlan = plans.find((p) => p.id === currentPlanId);
 
   return (
@@ -65,7 +65,7 @@ export function Header() {
                             アプリ全体の共通設定です。
                         </p>
                     </div>
-                    <div className="grid gap-2">
+                    <div className="grid gap-6">
                         <div className="grid gap-2">
                             <Label htmlFor="bagLimit">食材バック容量</Label>
                             <Input
@@ -82,6 +82,29 @@ export function Header() {
                                 }}
                             />
                         </div>
+                        <div className="grid gap-2">
+                             <Label htmlFor="weeklyCategory">今週の料理カテゴリ</Label>
+                             <Select
+                                value={settings.weeklyCategory || "none"}
+                                onValueChange={(val) => {
+                                    setWeeklyCategory(val === "none" ? null : (val as any));
+                                }}
+                             >
+                                <SelectTrigger className="h-8 w-full">
+                                    <SelectValue placeholder="未設定" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="none">未設定</SelectItem>
+                                    {COOKING_CATEGORIES.map((cat) => (
+                                        <SelectItem key={cat.value} value={cat.value}>
+                                            <span className="mr-2">{cat.icon}</span>
+                                            {cat.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                             </Select>
+                        </div>
+
                     </div>
                     <div className="border-t pt-4">
                         <Link href="/about" passHref>

@@ -29,4 +29,5 @@ export interface Plan {
 
 export interface Settings {
   bagLimit: number;
+  weeklyCategory: CookingCategory | null;
 }
