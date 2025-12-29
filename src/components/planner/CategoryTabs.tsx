@@ -2,11 +2,9 @@ import { Button } from "@/components/ui/button";
 import { usePlannerStore } from "@/store/usePlannerStore";
 import { CookingCategory } from "@/types";
 
-const categories: { value: CookingCategory; label: string; icon: string }[] = [
-  { value: "curry", label: "カレー", icon: "🍛" },
-  { value: "salad", label: "サラダ", icon: "🥗" },
-  { value: "dessert", label: "デザート", icon: "🥤" },
-];
+import { COOKING_CATEGORIES } from "@/data/constants";
+
+const categories = COOKING_CATEGORIES;
 
 export function CategoryTabs() {
   const { plans, currentPlanId, setCategory } = usePlannerStore();

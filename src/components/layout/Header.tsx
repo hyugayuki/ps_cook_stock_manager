@@ -9,18 +9,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 import { usePlannerStore } from "@/store/usePlannerStore";
-import { Settings as SettingsIcon, Info } from "lucide-react";
+import { Settings as SettingsIcon, Info, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { PlanManager } from "../planner/PlanManager";
-import { GAME_CONSTANTS } from "@/data/constants";
+import { GAME_CONSTANTS, COOKING_CATEGORIES, LATEST_UPDATE_DATE } from "@/data/constants";
 
 export function Header() {
-  const { plans, currentPlanId, switchPlan, settings, setBagLimit } = usePlannerStore();
+  const { plans, currentPlanId, switchPlan, settings, setBagLimit, setWeeklyCategory } = usePlannerStore();
   const currentPlan = plans.find((p) => p.id === currentPlanId);
 
   return (
@@ -51,51 +54,85 @@ export function Header() {
 
         {/* Settings - Always Right */}
         <div className="flex items-center justify-end md:ml-2">
-          <Popover>
-            <PopoverTrigger asChild>
+          <Dialog>
+            <DialogTrigger asChild>
                 <Button variant="ghost" size="icon">
                     <SettingsIcon className="h-5 w-5" />
                 </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80" align="end">
-                <div className="grid gap-4">
-                    <div className="space-y-2">
-                        <h4 className="font-medium leading-none">設定</h4>
-                        <p className="text-xs text-muted-foreground">
-                            アプリ全体の共通設定です。
-                        </p>
+            </DialogTrigger>
+            <DialogContent className="w-full sm:max-w-[425px]" onOpenAutoFocus={(e) => e.preventDefault()}>
+                <DialogHeader>
+                    <DialogTitle>設定</DialogTitle>
+                    <DialogDescription>
+                        アプリ全体の共通設定です。
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-6 py-4">
+                    <div className="grid gap-2">
+                        <Label htmlFor="bagLimit">食材バック容量</Label>
+                        <Input
+                            id="bagLimit"
+                            type="number"
+                            className="h-8"
+                            value={settings.bagLimit}
+                            max={GAME_CONSTANTS.DEFAULT_BAG_LIMIT}
+                            onChange={(e) => {
+                                const val = Number(e.target.value);
+                                if (val <= GAME_CONSTANTS.DEFAULT_BAG_LIMIT) {
+                                    setBagLimit(val);
+                                }
+                            }}
+                        />
                     </div>
                     <div className="grid gap-2">
-                        <div className="grid gap-2">
-                            <Label htmlFor="bagLimit">食材バック容量</Label>
-                            <Input
-                                id="bagLimit"
-                                type="number"
-                                className="h-8"
-                                value={settings.bagLimit}
-                                max={GAME_CONSTANTS.DEFAULT_BAG_LIMIT}
-                                onChange={(e) => {
-                                    const val = Number(e.target.value);
-                                    if (val <= GAME_CONSTANTS.DEFAULT_BAG_LIMIT) {
-                                        setBagLimit(val);
-                                    }
-                                }}
-                            />
-                        </div>
+                            <Label htmlFor="weeklyCategory">今週の料理カテゴリ</Label>
+                            <Select
+                            value={settings.weeklyCategory || "none"}
+                            onValueChange={(val) => {
+                                setWeeklyCategory(val === "none" ? null : (val as any));
+                            }}
+                            >
+                            <SelectTrigger className="h-8 w-full">
+                                <SelectValue placeholder="未設定" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="none">未設定</SelectItem>
+                                {COOKING_CATEGORIES.map((cat) => (
+                                    <SelectItem key={cat.value} value={cat.value}>
+                                        <span className="mr-2">{cat.icon}</span>
+                                        {cat.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                            </Select>
                     </div>
-                    <div className="border-t pt-4">
-                        <Link href="/about" passHref>
-                            <Button variant="ghost" className="w-full justify-start gap-2 px-2" asChild>
-                                <span>
-                                    <Info className="h-4 w-4" />
-                                    このアプリについて
-                                </span>
-                            </Button>
-                        </Link>
-                    </div>
+
                 </div>
-            </PopoverContent>
-          </Popover>
+                <div className="border-t pt-4 space-y-2">
+                    <Link href="/updates" passHref>
+                        <Button variant="ghost" className="w-full justify-start gap-2 px-2 relative" asChild>
+                            <span>
+                                <Sparkles className="h-4 w-4" />
+                                アップデート情報
+                                {(!settings.lastViewedUpdateDate || settings.lastViewedUpdateDate < LATEST_UPDATE_DATE) && (
+                                    <span className="ml-auto inline-flex items-center justify-center rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">
+                                        NEW
+                                    </span>
+                                )}
+                            </span>
+                        </Button>
+                    </Link>
+                    <Link href="/about" passHref>
+                        <Button variant="ghost" className="w-full justify-start gap-2 px-2" asChild>
+                            <span>
+                                <Info className="h-4 w-4" />
+                                このアプリについて
+                            </span>
+                        </Button>
+                    </Link>
+                </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </header>
