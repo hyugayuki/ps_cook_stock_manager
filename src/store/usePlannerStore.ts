@@ -17,6 +17,7 @@ interface PlannerState {
   updateTarget: (recipeId: string, count: number) => void;
   setBagLimit: (limit: number) => void;
   setWeeklyCategory: (category: CookingCategory | null) => void;
+  setLastViewedUpdateDate: (date: string) => void;
   
   // Filtering
   selectedIngredientId: string | null;
@@ -40,6 +41,7 @@ export const usePlannerStore = create<PlannerState>()(
       settings: {
         bagLimit: GAME_CONSTANTS.DEFAULT_BAG_LIMIT,
         weeklyCategory: null,
+        lastViewedUpdateDate: null,
       },
 
       createPlan: (name) =>
@@ -127,6 +129,11 @@ export const usePlannerStore = create<PlannerState>()(
       setWeeklyCategory: (category) =>
         set((state) => ({
           settings: { ...state.settings, weeklyCategory: category },
+        })),
+
+      setLastViewedUpdateDate: (date) =>
+        set((state) => ({
+          settings: { ...state.settings, lastViewedUpdateDate: date },
         })),
     }),
     {

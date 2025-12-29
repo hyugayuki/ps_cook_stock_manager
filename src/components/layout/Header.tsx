@@ -17,10 +17,10 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { usePlannerStore } from "@/store/usePlannerStore";
-import { Settings as SettingsIcon, Info } from "lucide-react";
+import { Settings as SettingsIcon, Info, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { PlanManager } from "../planner/PlanManager";
-import { GAME_CONSTANTS, COOKING_CATEGORIES } from "@/data/constants";
+import { GAME_CONSTANTS, COOKING_CATEGORIES, LATEST_UPDATE_DATE } from "@/data/constants";
 
 export function Header() {
   const { plans, currentPlanId, switchPlan, settings, setBagLimit, setWeeklyCategory } = usePlannerStore();
@@ -108,7 +108,20 @@ export function Header() {
                     </div>
 
                 </div>
-                <div className="border-t pt-4">
+                <div className="border-t pt-4 space-y-2">
+                    <Link href="/updates" passHref>
+                        <Button variant="ghost" className="w-full justify-start gap-2 px-2 relative" asChild>
+                            <span>
+                                <Sparkles className="h-4 w-4" />
+                                アップデート情報
+                                {(!settings.lastViewedUpdateDate || settings.lastViewedUpdateDate < LATEST_UPDATE_DATE) && (
+                                    <span className="ml-auto inline-flex items-center justify-center rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">
+                                        NEW
+                                    </span>
+                                )}
+                            </span>
+                        </Button>
+                    </Link>
                     <Link href="/about" passHref>
                         <Button variant="ghost" className="w-full justify-start gap-2 px-2" asChild>
                             <span>
