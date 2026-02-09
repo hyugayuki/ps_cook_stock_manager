@@ -2,6 +2,19 @@ import { Recipe } from "@/types";
 
 export const recipes: Recipe[] = [
   {
+    id: "みつあつめチョコワッフル",
+    name: "みつあつめチョコワッフル",
+    category: "dessert",
+    ingredients: [
+      { id: "honey", count: 38 },
+      { id: "corn", count: 28 },
+      { id: "oil", count: 28 },
+      { id: "cacao", count: 21 }
+    ],
+    energy: 25484,
+    totalIngredients: 115
+  },
+  {
     id: "じならしワカモレチップス",
     name: "じならしワカモレチップス",
     category: "salad",
