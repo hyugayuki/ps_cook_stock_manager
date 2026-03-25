@@ -52,7 +52,6 @@ export default function UpdatesPage() {
             <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary ring-4 ring-background" />
             <div className="mb-2 flex items-center gap-2">
                 <span className="font-mono text-sm font-semibold text-muted-foreground">2026.02.09</span>
-                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">New</span>
             </div>
             <h2 className="mb-3 text-lg font-semibold">レシピデータの追加</h2>
             <div className="prose prose-sm text-muted-foreground">
