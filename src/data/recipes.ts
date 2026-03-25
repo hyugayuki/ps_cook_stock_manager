@@ -253,12 +253,13 @@ export const recipes: Recipe[] = [
     name: "クロスチョップドサラダ",
     category: "salad",
     ingredients: [
-      { id: "egg", count: 20 },
       { id: "sausage", count: 15 },
-      { id: "tomato", count: 10 }
+      { id: "egg", count: 20 },
+      { id: "tomato", count: 10 },
+      { id: "corn", count: 11 }
     ],
     energy: 8755,
-    totalIngredients: 45
+    totalIngredients: 56
   },
   {
     id: "ヤドンテールのペッパーサラダ",
