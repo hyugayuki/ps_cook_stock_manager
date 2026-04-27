@@ -2,6 +2,19 @@ import { Recipe } from "@/types";
 
 export const recipes: Recipe[] = [
   {
+    id: "ごろごろねっとうサラダ",
+    name: "ごろごろねっとうサラダ",
+    category: "salad",
+    ingredients: [
+      { id: "pumpkin", count: 20 },
+      { id: "potato", count: 30 },
+      { id: "corn", count: 18 },
+      { id: "mushroom", count: 27 }
+    ],
+    energy: 25356,
+    totalIngredients: 95
+  },
+  {
     id: "みつあつめチョコワッフル",
     name: "みつあつめチョコワッフル",
     category: "dessert",
