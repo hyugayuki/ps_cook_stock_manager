@@ -28,12 +28,30 @@ export default function UpdatesPage() {
       <h1 className="mb-8 text-2xl font-bold">アップデート情報</h1>
 
       <div className="space-y-6">
+        {/* 2026-04-27 Update */}
+        <section className="relative border-l-2 border-primary/20 pl-6 pb-8 last:pb-0">
+            <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary ring-4 ring-background" />
+            <div className="mb-2 flex items-center gap-2">
+                <span className="font-mono text-sm font-semibold text-muted-foreground">2026.04.27</span>
+                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">New</span>
+            </div>
+            <h2 className="mb-3 text-lg font-semibold">レシピデータの追加</h2>
+            <div className="prose prose-sm text-muted-foreground">
+                <ul className="list-disc pl-4 space-y-1">
+                    <li>
+                        <strong>新レシピ「ごろごろねっとうサラダ」を追加</strong>
+                        <br />
+                        サラダカテゴリに新レシピ「ごろごろねっとうサラダ」を追加しました。
+                    </li>
+                </ul>
+            </div>
+        </section>
+
         {/* 2026-03-26 Update */}
         <section className="relative border-l-2 border-primary/20 pl-6 pb-8 last:pb-0">
             <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary ring-4 ring-background" />
             <div className="mb-2 flex items-center gap-2">
                 <span className="font-mono text-sm font-semibold text-muted-foreground">2026.03.26</span>
-                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">New</span>
             </div>
             <h2 className="mb-3 text-lg font-semibold">レシピデータの修正</h2>
             <div className="prose prose-sm text-muted-foreground">
