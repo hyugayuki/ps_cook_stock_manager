@@ -2,6 +2,32 @@ import { Recipe } from "@/types";
 
 export const recipes: Recipe[] = [
   {
+    id: "とびはねるカレーうどん",
+    name: "とびはねるカレーうどん",
+    category: "curry",
+    ingredients: [
+      { id: "ginger", count: 39 },
+      { id: "mushroom", count: 31 },
+      { id: "herb", count: 22 },
+      { id: "sausage", count: 20 }
+    ],
+    energy: 25539,
+    totalIngredients: 112
+  },
+  {
+    id: "ワカクサカレーパン",
+    name: "ワカクサカレーパン",
+    category: "curry",
+    ingredients: [
+      { id: "ginger", count: 20 },
+      { id: "herb", count: 20 },
+      { id: "soybean", count: 8 },
+      { id: "oil", count: 15 }
+    ],
+    energy: 10945,
+    totalIngredients: 63
+  },
+  {
     id: "ごろごろねっとうサラダ",
     name: "ごろごろねっとうサラダ",
     category: "salad",
