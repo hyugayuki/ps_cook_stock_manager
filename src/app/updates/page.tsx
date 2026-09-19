@@ -28,12 +28,45 @@ export default function UpdatesPage() {
       <h1 className="mb-8 text-2xl font-bold">アップデート情報</h1>
 
       <div className="space-y-6">
+        {/* 2026-09-20 Update */}
+        <section className="relative border-l-2 border-primary/20 pl-6 pb-8 last:pb-0">
+            <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary ring-4 ring-background" />
+            <div className="mb-2 flex items-center gap-2">
+                <span className="font-mono text-sm font-semibold text-muted-foreground">2026.09.20</span>
+                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">New</span>
+            </div>
+            <h2 className="mb-3 text-lg font-semibold">「+1したときの必要食材の増加数」を表示する機能を追加</h2>
+            <div className="prose prose-sm text-muted-foreground">
+                <ul className="list-disc pl-4 space-y-1">
+                    <li>
+                        <strong>🎒バッジでレシピごとの増加数を表示</strong>
+                        <br />
+                        レシピ名の横に、そのレシピを+1したときに必要食材リストの合計数が実際に何個増えるかを🎒バッジで表示するようにしました。
+                    </li>
+                    <li>
+                        <strong>カテゴリをまたぐ食材の重複を考慮</strong>
+                        <br />
+                        同じ食材が別カテゴリのレシピでより多く必要とされている場合は、合計数が増えないため🎒+0（緑色）で表示されます。
+                    </li>
+                    <li>
+                        <strong>レシピ詳細に食材ごとの内訳を追加</strong>
+                        <br />
+                        レシピを開くと、必要食材ひとつひとつについても同様の🎒バッジで内訳を確認できるようになりました。
+                    </li>
+                    <li>
+                        <strong>「使い方」ページを新設</strong>
+                        <br />
+                        設定メニューに「使い方」を追加し、🎒バッジの見方などをUI例つきで解説しています。
+                    </li>
+                </ul>
+            </div>
+        </section>
+
         {/* 2026-08-10 Update */}
         <section className="relative border-l-2 border-primary/20 pl-6 pb-8 last:pb-0">
             <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary ring-4 ring-background" />
             <div className="mb-2 flex items-center gap-2">
                 <span className="font-mono text-sm font-semibold text-muted-foreground">2026.08.10</span>
-                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">New</span>
             </div>
             <h2 className="mb-3 text-lg font-semibold">レシピデータの追加</h2>
             <div className="prose prose-sm text-muted-foreground">

@@ -1,10 +1,18 @@
 import { usePlannerStore } from "@/store/usePlannerStore";
 import { recipes } from "@/data/recipes";
 import { RecipeCard } from "./RecipeCard";
+import { useMemo } from "react";
+import { computeCategoryTotals, computeTotalIngredients } from "@/lib/ingredientCalculations";
 
 export function RecipeList() {
   const { plans, currentPlanId, selectedIngredientId } = usePlannerStore();
   const currentPlan = plans.find((p) => p.id === currentPlanId);
+
+  const { categoryTotals, totalIngredients } = useMemo(() => {
+    const categoryTotals = computeCategoryTotals(currentPlan?.targets || {}, recipes);
+    const totalIngredients = computeTotalIngredients(categoryTotals);
+    return { categoryTotals, totalIngredients };
+  }, [currentPlan]);
 
   if (!currentPlan) return <div>プランが見つかりません。新規作成してください。</div>;
 
@@ -21,7 +29,12 @@ export function RecipeList() {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-2 p-2 sm:p-4">
       {filteredRecipes.map((recipe) => (
-        <RecipeCard key={recipe.id} recipe={recipe} />
+        <RecipeCard
+          key={recipe.id}
+          recipe={recipe}
+          categoryTotals={categoryTotals}
+          totalIngredients={totalIngredients}
+        />
       ))}
       {filteredRecipes.length === 0 && (
           <div className="py-8 text-center text-muted-foreground">
