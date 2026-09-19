@@ -21,6 +21,7 @@ import { usePlannerStore } from "@/store/usePlannerStore";
 import { useMemo, useState } from "react";
 import { AlertCircle, ChevronUp } from "lucide-react";
 import { COOKING_CATEGORIES } from "@/data/constants";
+import { computeCategoryTotals, computeTotalIngredients } from "@/lib/ingredientCalculations";
 
 export function IngredientSummary() {
   const { plans, currentPlanId, settings, selectedIngredientId, setSelectedIngredient } = usePlannerStore();
@@ -36,31 +37,8 @@ export function IngredientSummary() {
   const summary = useMemo(() => {
     if (!currentPlan) return [];
 
-    const totalIngredients: Record<string, number> = {};
-
-    // Calculate totals based on recipes
-    // Calculate totals per category
-    const categoryTotals: Record<string, Record<string, number>> = {};
-
-    Object.entries(currentPlan.targets).forEach(([recipeId, count]) => {
-      if (count <= 0) return;
-      const recipe = recipes.find((r) => r.id === recipeId);
-      if (!recipe) return;
-
-      const cat = recipe.category;
-      if (!categoryTotals[cat]) categoryTotals[cat] = {};
-
-      recipe.ingredients.forEach((ing) => {
-        categoryTotals[cat][ing.id] = (categoryTotals[cat][ing.id] || 0) + ing.count * count;
-      });
-    });
-
-    // Take the maximum across categories for each ingredient
-    Object.values(categoryTotals).forEach((catTotal) => {
-        Object.entries(catTotal).forEach(([ingId, amount]) => {
-            totalIngredients[ingId] = Math.max(totalIngredients[ingId] || 0, amount);
-        });
-    });
+    const categoryTotals = computeCategoryTotals(currentPlan.targets, recipes);
+    const totalIngredients = computeTotalIngredients(categoryTotals);
 
     // Map all ingredients, not just used ones
     return ingredients

@@ -1,20 +1,39 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { usePlannerStore } from "@/store/usePlannerStore";
 import { Recipe } from "@/types";
-import { ChevronDown, Minus, Plus, Zap } from "lucide-react";
+import { Backpack, ChevronDown, Minus, Plus, Zap } from "lucide-react";
 import { ingredients } from "@/data/ingredients";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
+import { CategoryTotals, getIncrementBreakdown } from "@/lib/ingredientCalculations";
 
 interface RecipeCardProps {
   recipe: Recipe;
+  categoryTotals: CategoryTotals;
+  totalIngredients: Record<string, number>;
 }
 
-export function RecipeCard({ recipe }: RecipeCardProps) {
+export function RecipeCard({ recipe, categoryTotals, totalIngredients }: RecipeCardProps) {
   const { plans, currentPlanId, updateTarget } = usePlannerStore();
   const currentPlan = plans.find((p) => p.id === currentPlanId);
   const count = currentPlan?.targets[recipe.id] || 0;
   const [isExpanded, setIsExpanded] = useState(false);
+
+  // このレシピを+1したときに、食材ごとに合計食材数(バッグ容量)が実際に何個増えるか
+  // (他カテゴリで同じ食材がより多く必要な場合は増加しない)
+  const incrementBreakdown = useMemo(
+    () => getIncrementBreakdown(recipe, categoryTotals, totalIngredients),
+    [recipe, categoryTotals, totalIngredients]
+  );
+  const incrementImpact = useMemo(
+    () => incrementBreakdown.reduce((sum, detail) => sum + detail.delta, 0),
+    [incrementBreakdown]
+  );
+  const incrementByIngredientId = useMemo(
+    () => new Map(incrementBreakdown.map((detail) => [detail.id, detail.delta])),
+    [incrementBreakdown]
+  );
 
   const handleIncrement = () => updateTarget(recipe.id, count + 1);
   const handleDecrement = () => updateTarget(recipe.id, count - 1);
@@ -35,11 +54,26 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
           {/* Info */}
           <div className="min-w-0 flex-1 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
             <div className="flex items-center gap-2">
-                <h3 className="truncate text-sm font-bold leading-tight">{recipe.name}</h3>
+                <h3 className="min-w-0 flex-1 truncate text-sm font-bold leading-tight">{recipe.name}</h3>
             </div>
-            <div className="mt-1 flex items-center text-xs text-muted-foreground">
-                <Zap className={cn("mr-0.5 h-3 w-3", isActive ? "fill-primary text-primary" : "fill-muted-foreground")} />
-                {recipe.energy.toLocaleString()} 
+            <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+                <span className="flex items-center">
+                    <Zap className={cn("mr-0.5 h-3 w-3", isActive ? "fill-primary text-primary" : "fill-muted-foreground")} />
+                    {recipe.energy.toLocaleString()}
+                </span>
+                <Badge
+                    variant="outline"
+                    className={cn(
+                        "h-5 gap-0.5 px-1.5 py-0 text-[10px] font-semibold",
+                        incrementImpact === 0
+                            ? "border-emerald-500/50 text-emerald-600"
+                            : "border-muted-foreground/30 text-muted-foreground"
+                    )}
+                    title="このレシピを+1したときの合計食材数の増加分"
+                >
+                    <Backpack className="h-3 w-3" />
+                    +{incrementImpact}
+                </Badge>
             </div>
           </div>
 
@@ -77,11 +111,24 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
               <div className="flex flex-wrap gap-2">
                 {recipe.ingredients.map(ing => {
                     const ingredient = ingredients.find(i => i.id === ing.id);
+                    const delta = incrementByIngredientId.get(ing.id) ?? ing.count;
                     return (
                         <div key={ing.id} className="flex items-center gap-1.5 rounded-md border bg-background px-2 py-1 text-xs">
                             <span className="text-base leading-none">{ingredient?.emoji}</span>
                             <span className="font-medium text-muted-foreground">{ingredient?.name || ing.id}</span>
                             <span className="font-bold text-foreground">x{ing.count}</span>
+                            <span
+                                className={cn(
+                                    "flex items-center gap-0.5 rounded px-1 py-0.5 text-[10px] font-semibold",
+                                    delta === 0
+                                        ? "bg-emerald-500/15 text-emerald-600"
+                                        : "bg-muted text-muted-foreground"
+                                )}
+                                title="このレシピを+1したときの合計食材数への追加分"
+                            >
+                                <Backpack className="h-2.5 w-2.5" />
+                                +{delta}
+                            </span>
                         </div>
                     )
                 })}

@@ -17,7 +17,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { usePlannerStore } from "@/store/usePlannerStore";
-import { Settings as SettingsIcon, Info, Sparkles } from "lucide-react";
+import { Settings as SettingsIcon, Info, Sparkles, HelpCircle } from "lucide-react";
 import Link from "next/link";
 import { PlanManager } from "../planner/PlanManager";
 import { GAME_CONSTANTS, COOKING_CATEGORIES, LATEST_UPDATE_DATE } from "@/data/constants";
@@ -109,6 +109,14 @@ export function Header() {
 
                 </div>
                 <div className="border-t pt-4 space-y-2">
+                    <Link href="/help" passHref>
+                        <Button variant="ghost" className="w-full justify-start gap-2 px-2" asChild>
+                            <span>
+                                <HelpCircle className="h-4 w-4" />
+                                使い方
+                            </span>
+                        </Button>
+                    </Link>
                     <Link href="/updates" passHref>
                         <Button variant="ghost" className="w-full justify-start gap-2 px-2 relative" asChild>
                             <span>
