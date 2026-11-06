@@ -11,6 +11,13 @@ const EXAMPLE_INGREDIENTS = [
   { emoji: "🍖", name: "マメミート", count: 20, delta: 0 },
 ];
 
+// とびはねるカレーうどん、ごろごろねっとうサラダ、みつあつめチョコワッフルを各1回作る場合
+const TOTAL_MODE_EXAMPLE = [
+  { name: "🍄 あじわいキノコ", curry: 31, salad: 27, dessert: null, max: 31, sum: 58 },
+  { name: "🌽 ワカクサコーン", curry: null, salad: 18, dessert: 28, max: 28, sum: 46 },
+  { name: "🫚 あったかジンジャー", curry: 39, salad: null, dessert: null, max: 39, sum: 39 },
+];
+
 export default function HelpPage() {
   return (
     <div className="container mx-auto min-h-screen max-w-2xl px-4 py-8">
@@ -47,6 +54,77 @@ export default function HelpPage() {
 
         <Card>
           <CardHeader>
+            <CardTitle>合計食材数の計算方法</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm leading-relaxed text-muted-foreground">
+            <p>
+              合計食材数の計算方法は2種類あり、プランごとに切り替えられます。
+            </p>
+            <ul className="list-disc space-y-2 pl-5">
+              <li>
+                <strong className="text-foreground">通常（カテゴリ間の最大値）</strong>：
+                食材ごとに、カテゴリ間で最も多い必要数だけを数えます。1週間に1カテゴリだけを作る通常の週に使います。新しいプランの初期設定です。
+              </li>
+              <li>
+                <strong className="text-foreground">全カテゴリを合算</strong>：
+                カテゴリをまたいで必要数をすべて足し算します。カビゴンのリクエストが「なんでも！」になるイベントのように、同じ期間に全カテゴリを作る場合に使います。
+              </li>
+            </ul>
+
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-foreground">
+                例：とびはねるカレーうどん、ごろごろねっとうサラダ、みつあつめチョコワッフルを各1回作る場合
+              </p>
+              <div className="overflow-x-auto rounded-md border">
+                <table className="w-full whitespace-nowrap text-xs">
+                  <thead className="bg-muted/50 text-foreground">
+                    <tr>
+                      <th scope="col" className="px-2 py-1.5 text-left font-semibold">食材</th>
+                      <th scope="col" className="px-2 py-1.5 text-right font-semibold">カレー</th>
+                      <th scope="col" className="px-2 py-1.5 text-right font-semibold">サラダ</th>
+                      <th scope="col" className="px-2 py-1.5 text-right font-semibold">デザート</th>
+                      <th scope="col" className="px-2 py-1.5 text-right font-semibold">通常</th>
+                      <th scope="col" className="px-2 py-1.5 text-right font-semibold">合算</th>
+                    </tr>
+                  </thead>
+                  <tbody className="tabular-nums">
+                    {TOTAL_MODE_EXAMPLE.map((row) => (
+                      <tr key={row.name} className="border-t">
+                        <th scope="row" className="px-2 py-1.5 text-left font-medium">{row.name}</th>
+                        <td className="px-2 py-1.5 text-right">{row.curry ?? "-"}</td>
+                        <td className="px-2 py-1.5 text-right">{row.salad ?? "-"}</td>
+                        <td className="px-2 py-1.5 text-right">{row.dessert ?? "-"}</td>
+                        <td className="px-2 py-1.5 text-right font-bold text-foreground">{row.max}</td>
+                        <td className="px-2 py-1.5 text-right font-bold text-foreground">{row.sum}</td>
+                      </tr>
+                    ))}
+                    <tr className="border-t bg-muted/30 text-foreground">
+                      <th scope="row" className="px-2 py-1.5 text-left font-semibold">全食材の合計</th>
+                      <td className="px-2 py-1.5 text-right">112</td>
+                      <td className="px-2 py-1.5 text-right">95</td>
+                      <td className="px-2 py-1.5 text-right">115</td>
+                      <td className="px-2 py-1.5 text-right font-bold">277</td>
+                      <td className="px-2 py-1.5 text-right font-bold">322</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p>
+                キノコとコーンのように複数のカテゴリで使う食材の分だけ、差が出ます（この例では45個）。1つのカテゴリでしか使わないジンジャーは、どちらの計算でも同じ数です。
+              </p>
+            </div>
+
+            <p>
+              切り替えるには、画面上部のプランセレクターを開き、
+              <strong className="text-foreground">「全カテゴリを合算（イベント用）」</strong>
+              をオンにします。合算中は合計食材数の横に「全カテゴリ合算」と表示され、バッグ容量との比較も合算後の数で行います。
+              この設定は選択中のプランにだけ適用され、他のプランの計算には影響しません。イベント用のプランを別に作っておくと、通常の週のプランをそのまま残せます。
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Backpack className="h-4 w-4" />
               🎒バッジ（+1したときの食材の増加分）について
@@ -58,8 +136,8 @@ export default function HelpPage() {
               🎒バッジが表示されます。
             </p>
             <p>
-              合計食材数は、カレー・サラダ・デザートの各カテゴリごとに必要数を計算したあと、
-              <strong className="text-foreground">食材ごとにカテゴリ間で最も多い数だけを採用</strong>する仕組みになっています
+              通常の計算方法では、カレー・サラダ・デザートの各カテゴリごとに必要数を計算したあと、
+              <strong className="text-foreground">食材ごとにカテゴリ間で最も多い数だけを採用</strong>します
               （同時に持ち歩くバッグは1つで、カテゴリごとに食材を積み増すわけではないためです）。
             </p>
             <p>
@@ -71,10 +149,8 @@ export default function HelpPage() {
               で表示されます。
             </p>
             <p>
-              カビゴンのリクエストが「なんでも！」になるイベントのように、同じ期間に全カテゴリを作る場合は、画面上部のプランセレクターを開いて
-              <strong className="text-foreground">「全カテゴリを合算（イベント用）」</strong>
-              をオンにしてください。そのプランではカテゴリをまたいで必要数を足し算します。🎒バッジも常にレシピの必要数どおりに増え、+0にはなりません。
-              この設定はプランごとに保存され、他のプランの計算には影響しません。
+              「全カテゴリを合算」がオンのプランでは、他のカテゴリで賄える分がないため、🎒バッジは常にレシピの必要数どおりに増え、+0にはなりません。
+              以下の例は通常の計算方法の場合です。
             </p>
 
             {/* レシピ一覧での表示例 */}
