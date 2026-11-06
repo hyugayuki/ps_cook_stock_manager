@@ -58,13 +58,6 @@ export function IngredientSummary() {
     </Badge>
   );
 
-  // Always show the component even if count is 0
-
-
-  if (summary.length === 0) {
-      return null;
-  }
-
   // Calculate ingredients used in the weekly category (Limited to active plan)
   const weeklyCategoryIngredients = useMemo(() => {
     if (!settings.weeklyCategory || !currentPlan) return new Set<string>();
@@ -80,6 +73,11 @@ export function IngredientSummary() {
 
     return usedIds;
   }, [settings.weeklyCategory, currentPlan]);
+
+  // プランが見つからない場合は表示しない(フックの呼び出し順が変わらないよう、全フックの後で判定する)
+  if (summary.length === 0) {
+      return null;
+  }
 
   const listItems = (
     <div className="space-y-1">

@@ -23,8 +23,7 @@ import { PlanManager } from "../planner/PlanManager";
 import { GAME_CONSTANTS, COOKING_CATEGORIES, LATEST_UPDATE_DATE } from "@/data/constants";
 
 export function Header() {
-  const { plans, currentPlanId, switchPlan, settings, setBagLimit, setWeeklyCategory } = usePlannerStore();
-  const currentPlan = plans.find((p) => p.id === currentPlanId);
+  const { settings, setBagLimit, setWeeklyCategory } = usePlannerStore();
 
   return (
     <header className="sticky top-0 z-10 w-full bg-background/95 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/80">
@@ -37,18 +36,6 @@ export function Header() {
 
         {/* Plan Selection UI - Centered on mobile, Right-aligned on desktop */}
         <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 md:static md:flex-1 md:translate-x-0 md:translate-y-0 md:justify-end">
-            <Select value={currentPlanId} onValueChange={switchPlan} disabled={plans.length <= 1}>
-              <SelectTrigger className="w-[140px] md:w-[180px]">
-                <SelectValue placeholder="プラン選択" />
-              </SelectTrigger>
-              <SelectContent>
-                {plans.map((plan) => (
-                  <SelectItem key={plan.id} value={plan.id}>
-                    {plan.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
             <PlanManager />
         </div>
 
