@@ -70,6 +70,12 @@ export default function HelpPage() {
               <span className="font-semibold">+数値</span>
               で表示されます。
             </p>
+            <p>
+              カビゴンのリクエストが「なんでも！」になるイベントのように、同じ期間に全カテゴリを作る場合は、プラン管理で
+              <strong className="text-foreground">「全カテゴリを合算（イベント用）」</strong>
+              をオンにしてください。そのプランではカテゴリをまたいで必要数を足し算します。🎒バッジも常にレシピの必要数どおりに増え、+0にはなりません。
+              この設定はプランごとに保存され、他のプランの計算には影響しません。
+            </p>
 
             {/* レシピ一覧での表示例 */}
             <div className="space-y-2">

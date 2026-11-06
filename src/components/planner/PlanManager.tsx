@@ -10,12 +10,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { usePlannerStore } from "@/store/usePlannerStore";
 import { Plus, Trash2, Pencil } from "lucide-react";
 import { useState } from "react";
 
 export function PlanManager() {
-  const { plans, createPlan, deletePlan, renamePlan, currentPlanId, switchPlan } = usePlannerStore();
+  const { plans, createPlan, deletePlan, renamePlan, setPlanTotalMode, currentPlanId, switchPlan } = usePlannerStore();
   const [newPlanName, setNewPlanName] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
@@ -53,7 +54,7 @@ export function PlanManager() {
           <Plus className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>プラン管理</DialogTitle>
           <DialogDescription>
@@ -82,10 +83,14 @@ export function PlanManager() {
         </DialogFooter>
 
         <div className="mt-4 border-t pt-4">
-            <h4 className="mb-2 text-sm font-medium">保存済みプラン一覧</h4>
+            <h4 className="mb-1 text-sm font-medium">保存済みプラン一覧</h4>
+            <p className="mb-2 text-xs leading-snug text-muted-foreground">
+              「全カテゴリを合算」をオンにすると、カテゴリをまたいで必要数を足し算します。「なんでも！」週向けです。
+            </p>
             <div className="space-y-2">
                 {plans.map(plan => (
-                    <div key={plan.id} className="flex items-center justify-between rounded-md border p-2">
+                    <div key={plan.id} className="space-y-2 rounded-md border p-2">
+                      <div className="flex items-center justify-between">
                          {editingId === plan.id ? (
                              <div className="flex flex-1 items-center gap-2">
                                  <Input 
@@ -121,6 +126,17 @@ export function PlanManager() {
                                 </Button>
                              )}
                          </div>
+                      </div>
+                      <div className="flex items-center gap-2 border-t pt-2">
+                        <Switch
+                          id={`total-mode-${plan.id}`}
+                          checked={plan.totalMode === "sum"}
+                          onCheckedChange={(checked) => setPlanTotalMode(plan.id, checked ? "sum" : "max")}
+                        />
+                        <Label htmlFor={`total-mode-${plan.id}`} className="cursor-pointer text-xs">
+                          全カテゴリを合算（イベント用）
+                        </Label>
+                      </div>
                     </div>
                 ))}
             </div>

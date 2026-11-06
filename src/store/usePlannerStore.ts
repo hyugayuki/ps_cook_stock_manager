@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Plan, Settings, CookingCategory } from '@/types';
+import { Plan, Settings, CookingCategory, IngredientTotalMode } from '@/types';
 import { GAME_CONSTANTS } from '@/data/constants';
 
 interface PlannerState {
@@ -13,6 +13,7 @@ interface PlannerState {
   deletePlan: (id: string) => void;
   switchPlan: (id: string) => void;
   renamePlan: (id: string, name: string) => void;
+  setPlanTotalMode: (id: string, mode: IngredientTotalMode) => void;
   setCategory: (category: CookingCategory) => void;
   updateTarget: (recipeId: string, count: number) => void;
   setBagLimit: (limit: number) => void;
@@ -86,6 +87,13 @@ export const usePlannerStore = create<PlannerState>()(
         set((state) => ({
           plans: state.plans.map((p) =>
             p.id === id ? { ...p, name } : p
+          ),
+        })),
+
+      setPlanTotalMode: (id, mode) =>
+        set((state) => ({
+          plans: state.plans.map((p) =>
+            p.id === id ? { ...p, totalMode: mode } : p
           ),
         })),
 

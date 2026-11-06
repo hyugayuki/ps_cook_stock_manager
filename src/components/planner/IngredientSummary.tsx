@@ -38,7 +38,7 @@ export function IngredientSummary() {
     if (!currentPlan) return [];
 
     const categoryTotals = computeCategoryTotals(currentPlan.targets, recipes);
-    const totalIngredients = computeTotalIngredients(categoryTotals);
+    const totalIngredients = computeTotalIngredients(categoryTotals, currentPlan.totalMode);
 
     // Map all ingredients, not just used ones
     return ingredients
@@ -52,6 +52,11 @@ export function IngredientSummary() {
 
   const totalCount = summary.reduce((sum, item) => sum + item.count, 0);
   const isOverLimit = totalCount > settings.bagLimit;
+  const sumModeBadge = currentPlan?.totalMode === "sum" && (
+    <Badge variant="outline" className="h-5 shrink-0 px-1.5 py-0 text-[10px]">
+        全カテゴリ合算
+    </Badge>
+  );
 
   // Always show the component even if count is 0
 
@@ -114,7 +119,10 @@ export function IngredientSummary() {
   const headerBadge = (
     <div className="mb-4 space-y-3">
         <div className="flex items-center justify-between">
-           <span className="text-sm text-muted-foreground">合計食材数</span>
+           <span className="flex items-center gap-2 text-sm text-muted-foreground">
+               合計食材数
+               {sumModeBadge}
+           </span>
            <Badge variant={isOverLimit ? "destructive" : "secondary"} className="text-base">
                {isOverLimit && <AlertCircle className="mr-1 h-4 w-4" />}
                {totalCount} / {settings.bagLimit}
@@ -164,6 +172,7 @@ export function IngredientSummary() {
          <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
                  <span className="font-bold">合計: {totalCount}</span>
+                 {sumModeBadge}
                  {isOverLimit && <span className="text-xs text-destructive">容量オーバー!</span>}
             </div>
             <Drawer open={open} onOpenChange={setOpen}>
