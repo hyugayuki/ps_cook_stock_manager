@@ -10,7 +10,7 @@ export function RecipeList() {
 
   const { categoryTotals, totalIngredients } = useMemo(() => {
     const categoryTotals = computeCategoryTotals(currentPlan?.targets || {}, recipes);
-    const totalIngredients = computeTotalIngredients(categoryTotals);
+    const totalIngredients = computeTotalIngredients(categoryTotals, currentPlan?.totalMode);
     return { categoryTotals, totalIngredients };
   }, [currentPlan]);
 

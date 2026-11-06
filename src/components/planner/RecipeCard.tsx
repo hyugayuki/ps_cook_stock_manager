@@ -18,13 +18,14 @@ export function RecipeCard({ recipe, categoryTotals, totalIngredients }: RecipeC
   const { plans, currentPlanId, updateTarget } = usePlannerStore();
   const currentPlan = plans.find((p) => p.id === currentPlanId);
   const count = currentPlan?.targets[recipe.id] || 0;
+  const totalMode = currentPlan?.totalMode;
   const [isExpanded, setIsExpanded] = useState(false);
 
   // このレシピを+1したときに、食材ごとに合計食材数(バッグ容量)が実際に何個増えるか
-  // (他カテゴリで同じ食材がより多く必要な場合は増加しない)
+  // (通常は他カテゴリで同じ食材がより多く必要な場合は増加しない。合算モードでは常に増える)
   const incrementBreakdown = useMemo(
-    () => getIncrementBreakdown(recipe, categoryTotals, totalIngredients),
-    [recipe, categoryTotals, totalIngredients]
+    () => getIncrementBreakdown(recipe, categoryTotals, totalIngredients, totalMode),
+    [recipe, categoryTotals, totalIngredients, totalMode]
   );
   const incrementImpact = useMemo(
     () => incrementBreakdown.reduce((sum, detail) => sum + detail.delta, 0),

@@ -28,12 +28,40 @@ export default function UpdatesPage() {
       <h1 className="mb-8 text-2xl font-bold">アップデート情報</h1>
 
       <div className="space-y-6">
+        {/* 2026-11-07 Update */}
+        <section className="relative border-l-2 border-primary/20 pl-6 pb-8 last:pb-0">
+            <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary ring-4 ring-background" />
+            <div className="mb-2 flex items-center gap-2">
+                <span className="font-mono text-sm font-semibold text-muted-foreground">2026.11.07</span>
+                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">New</span>
+            </div>
+            <h2 className="mb-3 text-lg font-semibold">イベント用に全カテゴリを合算できるようにしました</h2>
+            <div className="prose prose-sm text-muted-foreground">
+                <ul className="list-disc pl-4 space-y-1">
+                    <li>
+                        <strong>プランごとに合計方法を切り替え</strong>
+                        <br />
+                        プランセレクターの「全カテゴリを合算（イベント用）」をオンにすると、カテゴリをまたいで必要数を足し算します。カビゴンのリクエストが「なんでも！」になるイベント向けの設定です。
+                    </li>
+                    <li>
+                        <strong>プランの操作をセレクターに集約</strong>
+                        <br />
+                        プランの切り替え、作成、名前の変更、削除を、画面上部のプランセレクターからまとめて行えるようにしました。
+                    </li>
+                    <li>
+                        <strong>通常の計算はこれまでどおり</strong>
+                        <br />
+                        オフのプランは、これまでどおり食材ごとにカテゴリ間の最大値で計算します。
+                    </li>
+                </ul>
+            </div>
+        </section>
+
         {/* 2026-09-20 Update */}
         <section className="relative border-l-2 border-primary/20 pl-6 pb-8 last:pb-0">
             <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary ring-4 ring-background" />
             <div className="mb-2 flex items-center gap-2">
                 <span className="font-mono text-sm font-semibold text-muted-foreground">2026.09.20</span>
-                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">New</span>
             </div>
             <h2 className="mb-3 text-lg font-semibold">「+1したときの必要食材の増加数」を表示する機能を追加</h2>
             <div className="prose prose-sm text-muted-foreground">
