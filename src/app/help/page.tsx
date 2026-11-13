@@ -125,6 +125,37 @@ export default function HelpPage() {
 
         <Card>
           <CardHeader>
+            <CardTitle>カテゴリ別の内訳（重複チェック）</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm leading-relaxed text-muted-foreground">
+            <p>
+              必要食材リストの<strong className="text-foreground">「カテゴリ別」</strong>タブでは、食材ごとに、カレー・サラダ・デザートでそれぞれいくつ使うかを表で確認できます。
+              カテゴリ間で同じ食材を多く共有できているほど、少ない食材で済みます。
+            </p>
+            <ul className="list-disc space-y-2 pl-5">
+              <li>
+                <strong className="text-foreground">色付きのセル</strong>：その食材の必要数を決めているカテゴリです。色のない数は、ほかのカテゴリ用に持つ食材で賄えます。
+              </li>
+              <li>
+                <strong className="text-foreground">節約</strong>：カテゴリごとに足した数と必要数の差です。重複のおかげで持たずに済んでいる数を表します。
+              </li>
+              <li>
+                <strong className="text-foreground">合計の行</strong>：カテゴリごとの必要食材の合計です。表の上には、全体で何個（何%）節約できているかを表示します。
+              </li>
+            </ul>
+            <p>
+              上の例のプランでは、キノコはカレー31・サラダ27のうちカレーの31に色が付き、節約は27になります。
+              行を押すと、一覧タブと同じようにその食材を使うレシピに絞り込めます。
+            </p>
+            <p>
+              重複を増やすことだけが目的ではありません。料理エナジーとのバランスを見ながら、作るレシピを入れ替える目安にしてください。
+              「全カテゴリを合算」がオンのプランでは、必要数がカテゴリの合計になるため、節約はありません。
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Backpack className="h-4 w-4" />
               🎒バッジ（+1したときの食材の増加分）について

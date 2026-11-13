@@ -28,12 +28,35 @@ export default function UpdatesPage() {
       <h1 className="mb-8 text-2xl font-bold">アップデート情報</h1>
 
       <div className="space-y-6">
+        {/* 2026-11-14 Update */}
+        <section className="relative border-l-2 border-primary/20 pl-6 pb-8 last:pb-0">
+            <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary ring-4 ring-background" />
+            <div className="mb-2 flex items-center gap-2">
+                <span className="font-mono text-sm font-semibold text-muted-foreground">2026.11.14</span>
+                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">New</span>
+            </div>
+            <h2 className="mb-3 text-lg font-semibold">食材のカテゴリ別の内訳を確認できるようにしました</h2>
+            <div className="prose prose-sm text-muted-foreground">
+                <ul className="list-disc pl-4 space-y-1">
+                    <li>
+                        <strong>必要食材リストに「カテゴリ別」タブを追加</strong>
+                        <br />
+                        食材ごとに、カレー・サラダ・デザートでそれぞれいくつ使うかを表で確認できます。必要数を決めているカテゴリは色付きで表示します。
+                    </li>
+                    <li>
+                        <strong>重複による節約数を表示</strong>
+                        <br />
+                        カテゴリ間で食材を共有できているおかげで、持たずに済んでいる数と割合を表示します。作るレシピを入れ替えるときの目安にどうぞ。
+                    </li>
+                </ul>
+            </div>
+        </section>
+
         {/* 2026-11-07 Update */}
         <section className="relative border-l-2 border-primary/20 pl-6 pb-8 last:pb-0">
             <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary ring-4 ring-background" />
             <div className="mb-2 flex items-center gap-2">
                 <span className="font-mono text-sm font-semibold text-muted-foreground">2026.11.07</span>
-                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">New</span>
             </div>
             <h2 className="mb-3 text-lg font-semibold">イベント用に全カテゴリを合算できるようにしました</h2>
             <div className="prose prose-sm text-muted-foreground">

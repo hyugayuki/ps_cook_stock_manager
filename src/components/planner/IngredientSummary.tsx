@@ -22,12 +22,18 @@ import { useMemo, useState } from "react";
 import { AlertCircle, ChevronUp } from "lucide-react";
 import { COOKING_CATEGORIES } from "@/data/constants";
 import { computeCategoryTotals, computeTotalIngredients } from "@/lib/ingredientCalculations";
+import { analyzePlanOverlap } from "@/lib/overlapAnalysis";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { IngredientOverlapTable } from "./IngredientOverlapTable";
+
+type SummaryView = "list" | "category";
 
 export function IngredientSummary() {
   const { plans, currentPlanId, settings, selectedIngredientId, setSelectedIngredient } = usePlannerStore();
   const currentPlan = plans.find((p) => p.id === currentPlanId);
   const [open, setOpen] = useState(false);
   const [filterWeeklyCategory, setFilterWeeklyCategory] = useState(false);
+  const [view, setView] = useState<SummaryView>("list");
 
   const handleSelect = (id: string) => {
     setSelectedIngredient(selectedIngredientId === id ? null : id);
@@ -74,6 +80,12 @@ export function IngredientSummary() {
     return usedIds;
   }, [settings.weeklyCategory, currentPlan]);
 
+  // 食材ごとのカテゴリ別の内訳と重複度(「カテゴリ別」タブ用)
+  const overlap = useMemo(
+    () => (currentPlan ? analyzePlanOverlap(currentPlan, recipes, ingredients) : null),
+    [currentPlan]
+  );
+
   // プランが見つからない場合は表示しない(フックの呼び出し順が変わらないよう、全フックの後で判定する)
   if (summary.length === 0) {
       return null;
@@ -112,6 +124,29 @@ export function IngredientSummary() {
         )
       })}
     </div>
+  );
+
+  const viewSwitcher = (
+    <TabsList className="mb-3 w-full">
+      <TabsTrigger value="list">一覧</TabsTrigger>
+      <TabsTrigger value="category">カテゴリ別</TabsTrigger>
+    </TabsList>
+  );
+
+  const viewContent = (
+    <>
+      <TabsContent value="list">{listItems}</TabsContent>
+      {/* ScrollArea の中身は内容に合わせて広がるため、幅を親に固定して表だけを横スクロールさせる */}
+      <TabsContent value="category" className="w-0 min-w-full">
+        {overlap && (
+          <IngredientOverlapTable
+            analysis={overlap}
+            selectedIngredientId={selectedIngredientId}
+            onSelect={handleSelect}
+          />
+        )}
+      </TabsContent>
+    </>
   );
 
   const headerBadge = (
@@ -188,12 +223,17 @@ export function IngredientSummary() {
                   </DrawerDescription>
                 </DrawerHeader>
                 
-                <div className="flex flex-1 flex-col overflow-hidden p-4 pt-0">
+                <Tabs
+                    value={view}
+                    onValueChange={(v) => setView(v as SummaryView)}
+                    className="flex flex-1 flex-col gap-0 overflow-hidden p-4 pt-0"
+                >
                     {headerBadge}
+                    {viewSwitcher}
                     <div className="flex-1 overflow-y-auto pr-4">
-                        {listItems}
+                        {viewContent}
                     </div>
-                </div>
+                </Tabs>
 
                 <DrawerFooter className="pt-2">
                   <DrawerClose asChild>
@@ -212,10 +252,13 @@ export function IngredientSummary() {
               <CardTitle>必要食材リスト</CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
-                {headerBadge}
-                <ScrollArea className="h-[calc(100vh-250px)] w-full pr-4">
-                    {listItems}
-                </ScrollArea>
+                <Tabs value={view} onValueChange={(v) => setView(v as SummaryView)} className="gap-0">
+                    {headerBadge}
+                    {viewSwitcher}
+                    <ScrollArea className="h-[calc(100vh-300px)] w-full pr-4">
+                        {viewContent}
+                    </ScrollArea>
+                </Tabs>
             </CardContent>
           </Card>
       </div>
