@@ -150,19 +150,21 @@ export function IngredientSummary() {
   );
 
   const headerBadge = (
-    <div className="mb-4 space-y-3">
-        <div className="flex items-center justify-between">
-           <span className="flex items-center gap-2 text-sm text-muted-foreground">
-               合計食材数
-               {sumModeBadge}
-           </span>
-           <Badge variant={isOverLimit ? "destructive" : "secondary"} className="text-base">
-               {isOverLimit && <AlertCircle className="mr-1 h-4 w-4" />}
-               {totalCount} / {settings.bagLimit}
-           </Badge>
-        </div>
-        
-        <div className={`flex items-center space-x-2 ${!settings.weeklyCategory ? 'opacity-50 cursor-not-allowed' : ''}`}>
+    <div className="mb-3 flex items-center justify-between">
+       <span className="flex items-center gap-2 text-sm text-muted-foreground">
+           合計食材数
+           {sumModeBadge}
+       </span>
+       <Badge variant={isOverLimit ? "destructive" : "secondary"} className="text-base">
+           {isOverLimit && <AlertCircle className="mr-1 h-4 w-4" />}
+           {totalCount} / {settings.bagLimit}
+       </Badge>
+    </div>
+  );
+
+  // 一覧タブにだけ効くため、一覧タブを表示しているときだけ出す
+  const weeklyFilter = view === "list" && (
+        <div className={`mb-3 flex items-center space-x-2 ${!settings.weeklyCategory ? 'opacity-50 cursor-not-allowed' : ''}`}>
             <Switch 
                 id="weekly-filter" 
                 checked={filterWeeklyCategory} 
@@ -195,7 +197,6 @@ export function IngredientSummary() {
                     : "未設定"})
             </span>
         </div>
-    </div>
   );
 
   return (
@@ -230,6 +231,7 @@ export function IngredientSummary() {
                 >
                     {headerBadge}
                     {viewSwitcher}
+                    {weeklyFilter}
                     <div className="flex-1 overflow-y-auto pr-4">
                         {viewContent}
                     </div>
@@ -255,6 +257,7 @@ export function IngredientSummary() {
                 <Tabs value={view} onValueChange={(v) => setView(v as SummaryView)} className="gap-0">
                     {headerBadge}
                     {viewSwitcher}
+                    {weeklyFilter}
                     <ScrollArea className="h-[calc(100vh-300px)] w-full pr-4">
                         {viewContent}
                     </ScrollArea>

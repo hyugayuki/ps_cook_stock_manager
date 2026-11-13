@@ -94,7 +94,7 @@ export function IngredientOverlapTable({ analysis, selectedIngredientId, onSelec
                   selectedIngredientId === row.id && "bg-primary/20 hover:bg-primary/30"
                 )}
               >
-                <th scope="row" className="max-w-[5rem] truncate px-1 py-1.5 text-left font-medium" title={row.name}>
+                <th scope="row" className="max-w-[5rem] truncate lg:max-w-[7.5rem] px-1 py-1.5 text-left font-medium" title={row.name}>
                   <span className="mr-1">{row.emoji}</span>
                   {row.name}
                 </th>
