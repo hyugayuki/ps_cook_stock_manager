@@ -16,7 +16,7 @@ export interface Recipe {
   name: string;
   category: CookingCategory;
   ingredients: RecipeIngredient[];
-  energy: number;
+  energy: number | null; // 未判明の場合は null
   totalIngredients: number;
 }
 

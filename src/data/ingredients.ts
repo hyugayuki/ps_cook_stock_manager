@@ -20,4 +20,5 @@ export const ingredients: Ingredient[] = [
   { id: "coffee", name: "めざましコーヒー", emoji: "☕" },
   { id: "pumpkin", name: "ずっしりカボチャ", emoji: "🎃" },
   { id: "avocado", name: "つやつやアボカド", emoji: "🥑" },
+  { id: "nuts", name: "ひとくちナッツ", emoji: "🥜" },
 ];

@@ -1,6 +1,46 @@
 import { Recipe } from "@/types";
 
 export const recipes: Recipe[] = [
+  // 料理名・エナジーが未判明のレシピ。
+  // id は固定し、正式名が判明したら name と energy だけを更新する（id を変えるとプランの登録数が消える）
+  {
+    id: "食材数39個のカレー",
+    name: "食材数39個のカレー",
+    category: "curry",
+    ingredients: [
+      { id: "nuts", count: 15 },
+      { id: "pumpkin", count: 12 },
+      { id: "corn", count: 12 }
+    ],
+    energy: null,
+    totalIngredients: 39
+  },
+  {
+    id: "食材数121個のサラダ",
+    name: "食材数121個のサラダ",
+    category: "salad",
+    ingredients: [
+      { id: "nuts", count: 30 },
+      { id: "avocado", count: 22 },
+      { id: "ginger", count: 36 },
+      { id: "tomato", count: 33 }
+    ],
+    energy: null,
+    totalIngredients: 121
+  },
+  {
+    id: "食材数91個のデザート",
+    name: "食材数91個のデザート",
+    category: "dessert",
+    ingredients: [
+      { id: "nuts", count: 26 },
+      { id: "tail", count: 10 },
+      { id: "soybean", count: 22 },
+      { id: "egg", count: 33 }
+    ],
+    energy: null,
+    totalIngredients: 91
+  },
   {
     id: "とびはねるカレーうどん",
     name: "とびはねるカレーうどん",
