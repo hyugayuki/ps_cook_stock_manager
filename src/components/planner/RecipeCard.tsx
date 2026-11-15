@@ -60,7 +60,7 @@ export function RecipeCard({ recipe, categoryTotals, totalIngredients }: RecipeC
             <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
                 <span className="flex items-center">
                     <Zap className={cn("mr-0.5 h-3 w-3", isActive ? "fill-primary text-primary" : "fill-muted-foreground")} />
-                    {recipe.energy.toLocaleString()}
+                    {recipe.energy !== null ? recipe.energy.toLocaleString() : "???"}
                 </span>
                 <Badge
                     variant="outline"

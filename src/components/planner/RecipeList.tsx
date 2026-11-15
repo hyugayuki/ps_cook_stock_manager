@@ -24,7 +24,7 @@ export function RecipeList() {
             : true;
         return matchesCategory && matchesIngredient;
     })
-    .sort((a, b) => b.energy - a.energy);
+    .sort((a, b) => (b.energy ?? -1) - (a.energy ?? -1)); // エナジー未判明は末尾
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-2 p-2 sm:p-4">
