@@ -1,18 +1,12 @@
-import { usePlannerStore } from "@/store/usePlannerStore";
+import { useCurrentPlan, usePlannerStore } from "@/store/usePlannerStore";
 import { recipes } from "@/data/recipes";
 import { RecipeCard } from "./RecipeCard";
-import { useMemo } from "react";
-import { computeCategoryTotals, computeTotalIngredients } from "@/lib/ingredientCalculations";
+import { usePlanTotals } from "@/hooks/usePlanTotals";
 
 export function RecipeList() {
-  const { plans, currentPlanId, selectedIngredientId } = usePlannerStore();
-  const currentPlan = plans.find((p) => p.id === currentPlanId);
-
-  const { categoryTotals, totalIngredients } = useMemo(() => {
-    const categoryTotals = computeCategoryTotals(currentPlan?.targets || {}, recipes);
-    const totalIngredients = computeTotalIngredients(categoryTotals, currentPlan?.totalMode);
-    return { categoryTotals, totalIngredients };
-  }, [currentPlan]);
+  const currentPlan = useCurrentPlan();
+  const selectedIngredientId = usePlannerStore((s) => s.selectedIngredientId);
+  const { categoryTotals, totalIngredients } = usePlanTotals(currentPlan);
 
   if (!currentPlan) return <div>プランが見つかりません。新規作成してください。</div>;
 
@@ -32,6 +26,8 @@ export function RecipeList() {
         <RecipeCard
           key={recipe.id}
           recipe={recipe}
+          count={currentPlan.targets[recipe.id] ?? 0}
+          totalMode={currentPlan.totalMode}
           categoryTotals={categoryTotals}
           totalIngredients={totalIngredients}
         />

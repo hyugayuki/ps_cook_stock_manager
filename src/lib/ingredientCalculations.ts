@@ -8,19 +8,18 @@ export function computeCategoryTotals(
   recipes: Recipe[]
 ): CategoryTotals {
   const categoryTotals: CategoryTotals = {};
+  const recipeById = new Map(recipes.map((r) => [r.id, r]));
 
-  Object.entries(targets).forEach(([recipeId, count]) => {
-    if (count <= 0) return;
-    const recipe = recipes.find((r) => r.id === recipeId);
-    if (!recipe) return;
+  for (const [recipeId, count] of Object.entries(targets)) {
+    if (count <= 0) continue;
+    const recipe = recipeById.get(recipeId);
+    if (!recipe) continue;
 
-    const cat = recipe.category;
-    if (!categoryTotals[cat]) categoryTotals[cat] = {};
-
-    recipe.ingredients.forEach((ing) => {
-      categoryTotals[cat]![ing.id] = (categoryTotals[cat]![ing.id] || 0) + ing.count * count;
-    });
-  });
+    const catTotal = (categoryTotals[recipe.category] ??= {});
+    for (const ing of recipe.ingredients) {
+      catTotal[ing.id] = (catTotal[ing.id] ?? 0) + ing.count * count;
+    }
+  }
 
   return categoryTotals;
 }

@@ -17,20 +17,24 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { ingredients } from "@/data/ingredients";
 import { recipes } from "@/data/recipes";
-import { usePlannerStore } from "@/store/usePlannerStore";
+import { useCurrentPlan, usePlannerStore } from "@/store/usePlannerStore";
 import { useMemo, useState } from "react";
 import { AlertCircle, ChevronUp } from "lucide-react";
 import { COOKING_CATEGORIES } from "@/data/constants";
-import { computeCategoryTotals, computeTotalIngredients } from "@/lib/ingredientCalculations";
 import { analyzePlanOverlap } from "@/lib/overlapAnalysis";
+import { usePlanTotals } from "@/hooks/usePlanTotals";
+import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { IngredientOverlapTable } from "./IngredientOverlapTable";
 
 type SummaryView = "list" | "category";
 
 export function IngredientSummary() {
-  const { plans, currentPlanId, settings, selectedIngredientId, setSelectedIngredient } = usePlannerStore();
-  const currentPlan = plans.find((p) => p.id === currentPlanId);
+  const currentPlan = useCurrentPlan();
+  const settings = usePlannerStore((s) => s.settings);
+  const selectedIngredientId = usePlannerStore((s) => s.selectedIngredientId);
+  const setSelectedIngredient = usePlannerStore((s) => s.setSelectedIngredient);
+  const { categoryTotals, totalIngredients } = usePlanTotals(currentPlan);
   const [open, setOpen] = useState(false);
   const [filterWeeklyCategory, setFilterWeeklyCategory] = useState(false);
   const [view, setView] = useState<SummaryView>("list");
@@ -40,21 +44,11 @@ export function IngredientSummary() {
     setOpen(false); // Close drawer on mobile selection
   };
 
-  const summary = useMemo(() => {
-    if (!currentPlan) return [];
-
-    const categoryTotals = computeCategoryTotals(currentPlan.targets, recipes);
-    const totalIngredients = computeTotalIngredients(categoryTotals, currentPlan.totalMode);
-
-    // Map all ingredients, not just used ones
-    return ingredients
-      .map((ingredient) => ({
-        id: ingredient.id,
-        name: ingredient.name,
-        emoji: ingredient.emoji,
-        count: totalIngredients[ingredient.id] || 0,
-      }));
-  }, [currentPlan, plans]);
+  // 使われていない食材も含めて全食材を並べる
+  const summary = useMemo(
+    () => ingredients.map((ingredient) => ({ ...ingredient, count: totalIngredients[ingredient.id] ?? 0 })),
+    [totalIngredients]
+  );
 
   const totalCount = summary.reduce((sum, item) => sum + item.count, 0);
   const isOverLimit = totalCount > settings.bagLimit;
@@ -64,21 +58,11 @@ export function IngredientSummary() {
     </Badge>
   );
 
-  // Calculate ingredients used in the weekly category (Limited to active plan)
-  const weeklyCategoryIngredients = useMemo(() => {
-    if (!settings.weeklyCategory || !currentPlan) return new Set<string>();
-    
-    const usedIds = new Set<string>();
-    Object.entries(currentPlan.targets).forEach(([recipeId, count]) => {
-        if (count <= 0) return;
-        const recipe = recipes.find(r => r.id === recipeId);
-        if (recipe && recipe.category === settings.weeklyCategory) {
-            recipe.ingredients.forEach(i => usedIds.add(i.id));
-        }
-    });
-
-    return usedIds;
-  }, [settings.weeklyCategory, currentPlan]);
+  // 選択中プランのうち、今週のカテゴリのレシピで使う食材
+  const weeklyCategoryIngredients = useMemo(
+    () => new Set(Object.keys((settings.weeklyCategory && categoryTotals[settings.weeklyCategory]) || {})),
+    [settings.weeklyCategory, categoryTotals]
+  );
 
   // 食材ごとのカテゴリ別の内訳と重複度(「カテゴリ別」タブ用)
   const overlap = useMemo(
@@ -87,9 +71,19 @@ export function IngredientSummary() {
   );
 
   // プランが見つからない場合は表示しない(フックの呼び出し順が変わらないよう、全フックの後で判定する)
-  if (summary.length === 0) {
+  if (!currentPlan) {
       return null;
   }
+
+  const weeklyCategoryLabel = COOKING_CATEGORIES.find((c) => c.value === settings.weeklyCategory)?.label;
+
+  const setWeeklyFilter = (checked: boolean) => {
+    if (!settings.weeklyCategory) {
+      toast.error("今週の調理カテゴリを設定してください");
+      return;
+    }
+    setFilterWeeklyCategory(checked);
+  };
 
   const listItems = (
     <div className="space-y-1">
@@ -99,15 +93,18 @@ export function IngredientSummary() {
         const isSurplus = filterWeeklyCategory && settings.weeklyCategory && !weeklyCategoryIngredients.has(item.id);
 
         return (
-            <div 
-                key={item.id} 
-                className={`flex cursor-pointer items-center justify-between rounded-md px-2 py-2 transition-colors border ${
-                    isSelected 
-                    ? "bg-primary/20 hover:bg-primary/30 border-primary/50 ring-1 ring-primary/50" 
-                    : isSurplus
-                        ? "bg-emerald-500/10 hover:bg-emerald-500/20 border-emerald-500/50"
-                        : "hover:bg-muted/50 border-transparent"
-                }`}
+            <button
+                type="button"
+                key={item.id}
+                aria-pressed={isSelected}
+                className={cn(
+                    "flex w-full cursor-pointer items-center justify-between rounded-md border px-2 py-2 text-left transition-colors",
+                    isSelected
+                        ? "bg-primary/20 hover:bg-primary/30 border-primary/50 ring-1 ring-primary/50"
+                        : isSurplus
+                            ? "bg-emerald-500/10 hover:bg-emerald-500/20 border-emerald-500/50"
+                            : "hover:bg-muted/50 border-transparent"
+                )}
                 onClick={() => handleSelect(item.id)}
             >
             <span className="text-sm font-medium flex items-center">
@@ -119,8 +116,8 @@ export function IngredientSummary() {
                     </Badge>
                 )}
             </span>
-            <span className={`text-sm font-bold ${item.count === 0 ? 'text-muted-foreground' : 'text-primary'}`}>{item.count}</span>
-            </div>
+            <span className={cn("text-sm font-bold", item.count === 0 ? "text-muted-foreground" : "text-primary")}>{item.count}</span>
+            </button>
         )
       })}
     </div>
@@ -164,37 +161,26 @@ export function IngredientSummary() {
 
   // 一覧タブにだけ効くため、一覧タブを表示しているときだけ出す
   const weeklyFilter = view === "list" && (
-        <div className={`mb-3 flex items-center space-x-2 ${!settings.weeklyCategory ? 'opacity-50 cursor-not-allowed' : ''}`}>
-            <Switch 
-                id="weekly-filter" 
-                checked={filterWeeklyCategory} 
-                onCheckedChange={(checked) => {
-                   if (!settings.weeklyCategory) {
-                       toast.error("今週の調理カテゴリを設定してください");
-                       return;
-                   }
-                   setFilterWeeklyCategory(checked);
-                }}
+        <div className={cn("mb-3 flex items-center space-x-2", !settings.weeklyCategory && "cursor-not-allowed opacity-50")}>
+            <Switch
+                id="weekly-filter"
+                checked={filterWeeklyCategory}
+                onCheckedChange={setWeeklyFilter}
                 disabled={!settings.weeklyCategory}
             />
-            <Label 
-                htmlFor="weekly-filter" 
-                className={`text-sm ${!settings.weeklyCategory ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+            <Label
+                htmlFor="weekly-filter"
+                className={cn("text-sm", settings.weeklyCategory ? "cursor-pointer" : "cursor-not-allowed")}
                 onClick={(e) => {
+                    // 無効なスイッチのラベルを押したときにもトーストで理由を伝えるため、ラベル側で切り替える
                     e.preventDefault();
-                    if (!settings.weeklyCategory) {
-                        toast.error("今週の調理カテゴリを設定してください");
-                        return;
-                    }
-                    setFilterWeeklyCategory(!filterWeeklyCategory);
+                    setWeeklyFilter(!filterWeeklyCategory);
                 }}
             >
                 今週のレシピ外の食材を強調
             </Label>
             <span className="text-xs text-muted-foreground">
-                ({settings.weeklyCategory 
-                    ? COOKING_CATEGORIES.find(c => c.value === settings.weeklyCategory)?.label 
-                    : "未設定"})
+                ({weeklyCategoryLabel ?? "未設定"})
             </span>
         </div>
   );

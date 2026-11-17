@@ -8,7 +8,7 @@ import { usePlannerStore } from "@/store/usePlannerStore";
 import { LATEST_UPDATE_DATE } from "@/data/constants";
 
 export default function UpdatesPage() {
-  const { setLastViewedUpdateDate } = usePlannerStore();
+  const setLastViewedUpdateDate = usePlannerStore((s) => s.setLastViewedUpdateDate);
   
   useEffect(() => {
     setLastViewedUpdateDate(LATEST_UPDATE_DATE);
