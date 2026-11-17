@@ -4,14 +4,16 @@ import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { usePlannerStore } from "@/store/usePlannerStore";
+import { useCurrentPlan, usePlannerStore } from "@/store/usePlannerStore";
 import { Check, ChevronDown, Pencil, Plus, Trash2 } from "lucide-react";
 import { FormEvent, useState } from "react";
 
 // プランの切り替え・作成・編集・削除と、選択中プランの計算方法の設定をまとめたセレクター
 export function PlanManager() {
-  const { plans, createPlan, deletePlan, renamePlan, setPlanTotalMode, currentPlanId, switchPlan } = usePlannerStore();
-  const currentPlan = plans.find((p) => p.id === currentPlanId);
+  const plans = usePlannerStore((s) => s.plans);
+  const currentPlan = useCurrentPlan();
+  const currentPlanId = currentPlan?.id;
+  const { createPlan, deletePlan, renamePlan, setPlanTotalMode, switchPlan } = usePlannerStore.getState();
   const [isOpen, setIsOpen] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [newPlanName, setNewPlanName] = useState("");

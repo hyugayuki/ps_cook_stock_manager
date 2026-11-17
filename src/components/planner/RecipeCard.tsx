@@ -1,25 +1,25 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { usePlannerStore } from "@/store/usePlannerStore";
-import { Recipe } from "@/types";
+import { IngredientTotalMode, Recipe } from "@/types";
 import { Backpack, ChevronDown, Minus, Plus, Zap } from "lucide-react";
-import { ingredients } from "@/data/ingredients";
-import { useMemo, useState } from "react";
+import { ingredientById } from "@/data/ingredients";
+import { useId, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { CategoryTotals, getIncrementBreakdown } from "@/lib/ingredientCalculations";
 
 interface RecipeCardProps {
   recipe: Recipe;
+  count: number;
+  totalMode: IngredientTotalMode | undefined;
   categoryTotals: CategoryTotals;
   totalIngredients: Record<string, number>;
 }
 
-export function RecipeCard({ recipe, categoryTotals, totalIngredients }: RecipeCardProps) {
-  const { plans, currentPlanId, updateTarget } = usePlannerStore();
-  const currentPlan = plans.find((p) => p.id === currentPlanId);
-  const count = currentPlan?.targets[recipe.id] || 0;
-  const totalMode = currentPlan?.totalMode;
+export function RecipeCard({ recipe, count, totalMode, categoryTotals, totalIngredients }: RecipeCardProps) {
+  const updateTarget = usePlannerStore((s) => s.updateTarget);
   const [isExpanded, setIsExpanded] = useState(false);
+  const detailsId = useId();
 
   // このレシピを+1したときに、食材ごとに合計食材数(バッグ容量)が実際に何個増えるか
   // (通常は他カテゴリで同じ食材がより多く必要な場合は増加しない。合算モードでは常に増える)
@@ -38,6 +38,7 @@ export function RecipeCard({ recipe, categoryTotals, totalIngredients }: RecipeC
 
   const handleIncrement = () => updateTarget(recipe.id, count + 1);
   const handleDecrement = () => updateTarget(recipe.id, count - 1);
+  const toggleExpanded = () => setIsExpanded((expanded) => !expanded);
 
   const isActive = count > 0;
 
@@ -52,8 +53,8 @@ export function RecipeCard({ recipe, categoryTotals, totalIngredients }: RecipeC
     >
       {/* Main Row */}
       <div className="flex items-center gap-3 p-3">
-          {/* Info */}
-          <div className="min-w-0 flex-1 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
+          {/* Info (クリックでも開閉できる。キーボードでは右端の開閉ボタンを使う) */}
+          <div className="min-w-0 flex-1 cursor-pointer" onClick={toggleExpanded}>
             <div className="flex items-center gap-2">
                 <h3 className="min-w-0 flex-1 truncate text-sm font-bold leading-tight">{recipe.name}</h3>
             </div>
@@ -80,7 +81,7 @@ export function RecipeCard({ recipe, categoryTotals, totalIngredients }: RecipeC
 
           {/* Controls */}
           <div className="flex items-center gap-1">
-              <Button variant="outline" size="icon" className="h-8 w-8 shrink-0 rounded-full border-muted-foreground/30 hover:border-primary hover:bg-primary/10 hover:text-primary" onClick={handleDecrement}>
+              <Button variant="outline" size="icon" className="h-8 w-8 shrink-0 rounded-full border-muted-foreground/30 hover:border-primary hover:bg-primary/10 hover:text-primary" onClick={handleDecrement} aria-label={`${recipe.name}を1回減らす`}>
                 <Minus className="h-3 w-3" />
               </Button>
               <div className={cn(
@@ -89,7 +90,7 @@ export function RecipeCard({ recipe, categoryTotals, totalIngredients }: RecipeC
               )}>
                  {count}
               </div>
-              <Button variant="outline" size="icon" className="h-8 w-8 shrink-0 rounded-full border-muted-foreground/30 hover:border-primary hover:bg-primary/10 hover:text-primary" onClick={handleIncrement}>
+              <Button variant="outline" size="icon" className="h-8 w-8 shrink-0 rounded-full border-muted-foreground/30 hover:border-primary hover:bg-primary/10 hover:text-primary" onClick={handleIncrement} aria-label={`${recipe.name}を1回増やす`}>
                 <Plus className="h-3 w-3" />
               </Button>
           </div>
@@ -99,7 +100,10 @@ export function RecipeCard({ recipe, categoryTotals, totalIngredients }: RecipeC
             variant="ghost" 
             size="icon" 
             className="h-8 w-8 shrink-0 text-muted-foreground hover:bg-muted"
-            onClick={() => setIsExpanded(!isExpanded)}
+            onClick={toggleExpanded}
+            aria-expanded={isExpanded}
+            aria-controls={detailsId}
+            aria-label={`${recipe.name}の必要食材`}
           >
               <ChevronDown className={cn("h-4 w-4 transition-transform", isExpanded && "rotate-180")} />
           </Button>
@@ -107,11 +111,11 @@ export function RecipeCard({ recipe, categoryTotals, totalIngredients }: RecipeC
 
       {/* Expanded Content (Ingredients) */}
       {isExpanded && (
-          <div className="border-t bg-muted/20 p-3 pt-2">
+          <div id={detailsId} className="border-t bg-muted/20 p-3 pt-2">
               <div className="text-xs font-semibold text-muted-foreground mb-1">必要食材 ({recipe.totalIngredients})</div>
               <div className="flex flex-wrap gap-2">
                 {recipe.ingredients.map(ing => {
-                    const ingredient = ingredients.find(i => i.id === ing.id);
+                    const ingredient = ingredientById.get(ing.id);
                     const delta = incrementByIngredientId.get(ing.id) ?? ing.count;
                     return (
                         <div key={ing.id} className="flex items-center gap-1.5 rounded-md border bg-background px-2 py-1 text-xs">

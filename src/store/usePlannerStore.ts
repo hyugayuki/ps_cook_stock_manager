@@ -26,6 +26,7 @@ interface PlannerState {
 }
 
 const DEFAULT_PLAN_ID = 'default-plan';
+export const PLANNER_STORAGE_KEY = 'ps-cook-planner-storage';
 
 export const usePlannerStore = create<PlannerState>()(
   persist(
@@ -145,19 +146,24 @@ export const usePlannerStore = create<PlannerState>()(
         })),
     }),
     {
-      name: 'ps-cook-planner-storage',
+      name: PLANNER_STORAGE_KEY,
       version: 2,
-      migrate: (persistedState: any, version) => {
-        if (version === 1) {
-            // Rename '基本プラン' to '通常週'
-             if (persistedState && persistedState.plans) {
-                persistedState.plans = persistedState.plans.map((p: any) => 
-                    p.name === '基本プラン' ? { ...p, name: '通常週' } : p
-                );
-            }
+      migrate: (persistedState, version) => {
+        const state = persistedState as Partial<PlannerState> | undefined;
+        if (version === 1 && state?.plans) {
+          // Rename '基本プラン' to '通常週'
+          state.plans = state.plans.map((p) =>
+            p.name === '基本プラン' ? { ...p, name: '通常週' } : p
+          );
         }
-        return persistedState;
+        return state as PlannerState;
       },
     }
   )
 );
+
+// 選択中のプラン。プランの配列から毎回探す処理を各コンポーネントに書かずに済むようにする
+export const selectCurrentPlan = (state: PlannerState): Plan | undefined =>
+  state.plans.find((p) => p.id === state.currentPlanId);
+
+export const useCurrentPlan = () => usePlannerStore(selectCurrentPlan);

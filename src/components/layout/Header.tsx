@@ -17,13 +17,17 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { usePlannerStore } from "@/store/usePlannerStore";
+import { CookingCategory } from "@/types";
 import { Settings as SettingsIcon, Info, Sparkles, HelpCircle } from "lucide-react";
 import Link from "next/link";
 import { PlanManager } from "../planner/PlanManager";
 import { GAME_CONSTANTS, COOKING_CATEGORIES, LATEST_UPDATE_DATE } from "@/data/constants";
 
 export function Header() {
-  const { settings, setBagLimit, setWeeklyCategory } = usePlannerStore();
+  const settings = usePlannerStore((s) => s.settings);
+  const setBagLimit = usePlannerStore((s) => s.setBagLimit);
+  const setWeeklyCategory = usePlannerStore((s) => s.setWeeklyCategory);
+  const hasUnreadUpdate = !settings.lastViewedUpdateDate || settings.lastViewedUpdateDate < LATEST_UPDATE_DATE;
 
   return (
     <header className="sticky top-0 z-10 w-full bg-background/95 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/80">
@@ -43,7 +47,7 @@ export function Header() {
         <div className="flex items-center justify-end md:ml-2">
           <Dialog>
             <DialogTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" aria-label="設定">
                     <SettingsIcon className="h-5 w-5" />
                 </Button>
             </DialogTrigger>
@@ -76,7 +80,7 @@ export function Header() {
                             <Select
                             value={settings.weeklyCategory || "none"}
                             onValueChange={(val) => {
-                                setWeeklyCategory(val === "none" ? null : (val as any));
+                                setWeeklyCategory(val === "none" ? null : (val as CookingCategory));
                             }}
                             >
                             <SelectTrigger className="h-8 w-full">
@@ -96,35 +100,29 @@ export function Header() {
 
                 </div>
                 <div className="border-t pt-4 space-y-2">
-                    <Link href="/help" passHref>
-                        <Button variant="ghost" className="w-full justify-start gap-2 px-2" asChild>
-                            <span>
-                                <HelpCircle className="h-4 w-4" />
-                                使い方
-                            </span>
-                        </Button>
-                    </Link>
-                    <Link href="/updates" passHref>
-                        <Button variant="ghost" className="w-full justify-start gap-2 px-2 relative" asChild>
-                            <span>
-                                <Sparkles className="h-4 w-4" />
-                                アップデート情報
-                                {(!settings.lastViewedUpdateDate || settings.lastViewedUpdateDate < LATEST_UPDATE_DATE) && (
-                                    <span className="ml-auto inline-flex items-center justify-center rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">
-                                        NEW
-                                    </span>
-                                )}
-                            </span>
-                        </Button>
-                    </Link>
-                    <Link href="/about" passHref>
-                        <Button variant="ghost" className="w-full justify-start gap-2 px-2" asChild>
-                            <span>
-                                <Info className="h-4 w-4" />
-                                このアプリについて
-                            </span>
-                        </Button>
-                    </Link>
+                    <Button variant="ghost" className="w-full justify-start gap-2 px-2" asChild>
+                        <Link href="/help">
+                            <HelpCircle className="h-4 w-4" />
+                            使い方
+                        </Link>
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start gap-2 px-2" asChild>
+                        <Link href="/updates">
+                            <Sparkles className="h-4 w-4" />
+                            アップデート情報
+                            {hasUnreadUpdate && (
+                                <span className="ml-auto inline-flex items-center justify-center rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white">
+                                    NEW
+                                </span>
+                            )}
+                        </Link>
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start gap-2 px-2" asChild>
+                        <Link href="/about">
+                            <Info className="h-4 w-4" />
+                            このアプリについて
+                        </Link>
+                    </Button>
                 </div>
             </DialogContent>
           </Dialog>

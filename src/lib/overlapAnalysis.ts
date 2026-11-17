@@ -1,8 +1,6 @@
 import { CookingCategory, Ingredient, IngredientTotalMode, Plan, Recipe } from "@/types";
 import { computeCategoryTotals, computeTotalIngredients } from "@/lib/ingredientCalculations";
 
-export const ANALYSIS_CATEGORIES: CookingCategory[] = ["curry", "salad", "dessert"];
-
 export interface IngredientOverlapRow {
   id: string;
   name: string;

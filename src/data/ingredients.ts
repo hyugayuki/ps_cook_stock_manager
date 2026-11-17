@@ -22,3 +22,7 @@ export const ingredients: Ingredient[] = [
   { id: "avocado", name: "つやつやアボカド", emoji: "🥑" },
   { id: "nuts", name: "ひとくちナッツ", emoji: "🥜" },
 ];
+
+export const ingredientById: ReadonlyMap<string, Ingredient> = new Map(
+  ingredients.map((ingredient) => [ingredient.id, ingredient])
+);

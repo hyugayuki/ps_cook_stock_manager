@@ -1,13 +1,14 @@
-import { ANALYSIS_CATEGORIES, IngredientOverlapRow, PlanOverlapAnalysis } from "@/lib/overlapAnalysis";
+import { COOKING_CATEGORIES } from "@/data/constants";
+import { IngredientOverlapRow, PlanOverlapAnalysis } from "@/lib/overlapAnalysis";
 import { cn } from "@/lib/utils";
 import { CookingCategory } from "@/types";
-import { useState } from "react";
+import { useId, useState } from "react";
 
 // カテゴリごとのセルの色(以前使っていたスプレッドシートの色分けに合わせる)
-const CATEGORY_CELL: Record<CookingCategory, { label: string; icon: string; soft: string }> = {
-  curry: { label: "カレー", icon: "🍛", soft: "bg-orange-500/15" },
-  salad: { label: "サラダ", icon: "🥗", soft: "bg-emerald-500/15" },
-  dessert: { label: "デザート", icon: "🥤", soft: "bg-yellow-400/25" },
+const CATEGORY_CELL_COLOR: Record<CookingCategory, string> = {
+  curry: "bg-orange-500/15",
+  salad: "bg-emerald-500/15",
+  dessert: "bg-yellow-400/25",
 };
 
 const SORTS = [
@@ -18,8 +19,8 @@ const SORTS = [
 type SortKey = (typeof SORTS)[number]["key"];
 
 function sortRows(rows: IngredientOverlapRow[], key: SortKey) {
-  if (key === "required") return [...rows].sort((a, b) => b.required - a.required);
-  if (key === "shared") return [...rows].sort((a, b) => b.shared - a.shared || b.required - a.required);
+  if (key === "required") return rows.toSorted((a, b) => b.required - a.required);
+  if (key === "shared") return rows.toSorted((a, b) => b.shared - a.shared || b.required - a.required);
   return rows;
 }
 
@@ -32,6 +33,7 @@ interface Props {
 // 食材ごとに、どのカテゴリでいくつ使うかと、重複で節約できている数を示す表
 export function IngredientOverlapTable({ analysis, selectedIngredientId, onSelect }: Props) {
   const [sort, setSort] = useState<SortKey>("default");
+  const captionId = useId();
   const isSum = analysis.mode === "sum";
   const rows = sortRows(
     analysis.rows.filter((r) => r.categorySum > 0),
@@ -56,11 +58,12 @@ export function IngredientOverlapTable({ analysis, selectedIngredientId, onSelec
         )}
       </div>
 
-      <div className="flex gap-1 text-xs">
+      <div role="group" aria-label="並び順" className="flex gap-1 text-xs">
         {SORTS.map((s) => (
           <button
             key={s.key}
             type="button"
+            aria-pressed={sort === s.key}
             onClick={() => setSort(s.key)}
             className={cn("rounded-md border px-2 py-0.5", sort === s.key ? "bg-muted font-semibold" : "text-muted-foreground")}
           >
@@ -69,16 +72,20 @@ export function IngredientOverlapTable({ analysis, selectedIngredientId, onSelec
         ))}
       </div>
 
-      <div className="overflow-x-auto rounded-md border">
+      {/* 狭い画面では表だけを横スクロールさせる。キーボードでもスクロールできるようフォーカス可能な領域にする */}
+      <div role="region" aria-labelledby={captionId} tabIndex={0} className="overflow-x-auto rounded-md border">
         <table className="w-full text-xs tabular-nums">
+          <caption id={captionId} className="sr-only">
+            食材ごとのカテゴリ別の必要数
+          </caption>
           <thead className="whitespace-nowrap bg-muted/50">
             <tr>
               <th scope="col" className="px-1 py-1.5 text-left font-semibold">食材</th>
               <th scope="col" className="px-1 py-1.5 text-right font-semibold">必要</th>
-              {ANALYSIS_CATEGORIES.map((c) => (
-                <th key={c} scope="col" className={cn("px-1 py-1.5 text-right font-semibold", CATEGORY_CELL[c].soft)}>
-                  <span aria-hidden>{CATEGORY_CELL[c].icon}</span>
-                  <span className="sr-only">{CATEGORY_CELL[c].label}</span>
+              {COOKING_CATEGORIES.map((c) => (
+                <th key={c.value} scope="col" className={cn("px-1 py-1.5 text-right font-semibold", CATEGORY_CELL_COLOR[c.value])}>
+                  <span aria-hidden>{c.icon}</span>
+                  <span className="sr-only">{c.label}</span>
                 </th>
               ))}
               <th scope="col" className="px-1 py-1.5 text-right font-semibold text-emerald-600">節約</th>
@@ -94,12 +101,20 @@ export function IngredientOverlapTable({ analysis, selectedIngredientId, onSelec
                   selectedIngredientId === row.id && "bg-primary/20 hover:bg-primary/30"
                 )}
               >
-                <th scope="row" className="max-w-[5rem] truncate lg:max-w-[7.5rem] px-1 py-1.5 text-left font-medium" title={row.name}>
-                  <span className="mr-1">{row.emoji}</span>
-                  {row.name}
+                <th scope="row" className="max-w-[5rem] lg:max-w-[7.5rem] p-0 text-left font-medium">
+                  {/* 行のクリックで選択する。キーボードではこのボタンで選択でき、クリックは行へ伝わって処理される */}
+                  <button
+                    type="button"
+                    aria-pressed={selectedIngredientId === row.id}
+                    className="block w-full cursor-pointer truncate px-1 py-1.5 text-left"
+                    title={row.name}
+                  >
+                    <span className="mr-1">{row.emoji}</span>
+                    {row.name}
+                  </button>
                 </th>
                 <td className="px-1 py-1.5 text-right text-sm font-bold text-primary">{row.required}</td>
-                {ANALYSIS_CATEGORIES.map((c) => {
+                {COOKING_CATEGORIES.map(({ value: c }) => {
                   const amount = row.byCategory[c];
                   // 必要数を決めているカテゴリ(合算では全カテゴリが必要数に加わるため色付けしない)
                   const isDominant = !isSum && amount > 0 && amount === row.required;
@@ -108,7 +123,7 @@ export function IngredientOverlapTable({ analysis, selectedIngredientId, onSelec
                       key={c}
                       className={cn(
                         "px-1 py-1.5 text-right",
-                        isDominant ? cn("font-bold", CATEGORY_CELL[c].soft) : "text-muted-foreground"
+                        isDominant ? cn("font-bold", CATEGORY_CELL_COLOR[c]) : "text-muted-foreground"
                       )}
                     >
                       {amount > 0 ? amount : ""}
@@ -123,7 +138,7 @@ export function IngredientOverlapTable({ analysis, selectedIngredientId, onSelec
             <tr className="border-t bg-muted/30 font-semibold">
               <th scope="row" className="px-1 py-1.5 text-left">合計</th>
               <td className="px-1 py-1.5 text-right text-sm font-bold">{analysis.totalRequired}</td>
-              {ANALYSIS_CATEGORIES.map((c) => (
+              {COOKING_CATEGORIES.map(({ value: c }) => (
                 <td key={c} className="px-1 py-1.5 text-right">{analysis.categoryTotals[c]}</td>
               ))}
               <td className="px-1 py-1.5 text-right text-emerald-600">{analysis.totalShared}</td>

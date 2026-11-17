@@ -5,18 +5,17 @@ import { Header } from "@/components/layout/Header";
 import { CategoryTabs } from "@/components/planner/CategoryTabs";
 import { RecipeList } from "@/components/planner/RecipeList";
 import { IngredientSummary } from "@/components/planner/IngredientSummary";
-import { usePlannerStore } from "@/store/usePlannerStore";
+import { PLANNER_STORAGE_KEY, usePlannerStore } from "@/store/usePlannerStore";
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
-  const { switchPlan, currentPlanId, plans } = usePlannerStore();
 
   // Hydration fix for Persist middleware & Cross-tab synchronization
   useEffect(() => {
     setMounted(true);
 
     const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'ps-cook-planner-storage') {
+      if (e.key === PLANNER_STORAGE_KEY) {
         usePlannerStore.persist.rehydrate();
       }
     };
