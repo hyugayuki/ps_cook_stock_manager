@@ -28,12 +28,30 @@ export default function UpdatesPage() {
       <h1 className="mb-8 text-2xl font-bold">アップデート情報</h1>
 
       <div className="space-y-6">
+        {/* 2026-11-18 Update */}
+        <section className="relative border-l-2 border-primary/20 pl-6 pb-8 last:pb-0">
+            <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary ring-4 ring-background" />
+            <div className="mb-2 flex items-center gap-2">
+                <span className="font-mono text-sm font-semibold text-muted-foreground">2026.11.18</span>
+                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">New</span>
+            </div>
+            <h2 className="mb-3 text-lg font-semibold">新レシピの料理名とエナジーを反映</h2>
+            <div className="prose prose-sm text-muted-foreground">
+                <ul className="list-disc pl-4 space-y-1">
+                    <li>
+                        <strong>仮の名前で登録していた3品の正式名とエナジーを反映</strong>
+                        <br />
+                        食材数39個のカレー → タネばくだんナンカレー（7,950）、食材数121個のサラダ → くさむすびサラダラップ（26,350）、食材数91個のデザート → おいしいシッポロールケーキ（19,846）。プランに入れていた数はそのまま引き継がれます。
+                    </li>
+                </ul>
+            </div>
+        </section>
+
         {/* 2026-11-16 Update */}
         <section className="relative border-l-2 border-primary/20 pl-6 pb-8 last:pb-0">
             <div className="absolute -left-[9px] top-0 h-4 w-4 rounded-full bg-primary ring-4 ring-background" />
             <div className="mb-2 flex items-center gap-2">
                 <span className="font-mono text-sm font-semibold text-muted-foreground">2026.11.16</span>
-                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">New</span>
             </div>
             <h2 className="mb-3 text-lg font-semibold">新食材・レシピデータの追加</h2>
             <div className="prose prose-sm text-muted-foreground">
